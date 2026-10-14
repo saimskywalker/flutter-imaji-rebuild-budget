@@ -4,6 +4,9 @@ Unnecessary widget rebuilds in Flutter are invisible until a screen janks on a
 mid-range phone; `imaji_rebuild_budget` turns them into failing `flutter test`
 runs.
 
+[![pub version](https://img.shields.io/pub/v/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget)
+[![pub points](https://img.shields.io/pub/points/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget/score)
+[![pub likes](https://img.shields.io/pub/likes/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget/score)
 [![CI](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/actions/workflows/ci.yml/badge.svg)](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/actions/workflows/ci.yml)
 ![Flutter 3.27+](https://img.shields.io/badge/Flutter-3.27%2B-02569B?logo=flutter)
 ![Dart 3.6+](https://img.shields.io/badge/Dart-3.6%2B-0175C2?logo=dart)
@@ -21,8 +24,6 @@ runs.
   window whose scroll never moved or whose fake was never called.
 - **Failures say what rebuilt**, not only that something did.
 
-> Status: 0.1.0, not yet on pub.dev. Install from git (below).
-
 ## Contents
 
 - [30-second quick start](#30-second-quick-start)
@@ -37,7 +38,22 @@ runs.
 
 ## 30-second quick start
 
-Add it as a dev dependency:
+Add it as a dev dependency from
+[pub.dev](https://pub.dev/packages/imaji_rebuild_budget):
+
+```sh
+flutter pub add --dev imaji_rebuild_budget
+```
+
+or by hand in `pubspec.yaml`:
+
+```yaml
+dev_dependencies:
+  imaji_rebuild_budget: ^0.1.0
+```
+
+To try unreleased changes from `main` instead (not a published version, and
+it can change under you):
 
 ```yaml
 dev_dependencies:
@@ -264,10 +280,30 @@ throttled CI runner. A rebuild count is a proxy for jank, but a stable one.
 
 **What counts as a rebuild?**
 Every time Flutter calls `Element.rebuild` on an element that already existed
-when the window opened, or was mounted earlier in it: a `setState`, a changed
-`InheritedWidget` dependency, or a parent handing it a new widget instance.
-`const` widgets that Flutter skips are not counted. First builds are counted
-separately as mounts.
+when the window opened, or was mounted earlier in it. For stateless,
+stateful and proxy widgets (your own widgets, `Text`, `Builder`, an
+`InheritedWidget`, state-library consumers) that covers a `setState`, a
+changed `InheritedWidget` dependency, and a parent handing it a new widget
+instance. `const` widgets that Flutter skips are not counted. First builds are
+counted separately as mounts.
+
+**Known gap: render-object widgets are mostly not counted.** For
+`ColoredBox`, `Padding`, `SizedBox`, `Column`, `RichText`, `Opacity` and every
+other `RenderObjectWidget`, a parent handing it a new widget instance is not
+counted: `RenderObjectElement.update` calls `updateRenderObject` directly
+instead of going through `Element.rebuild`, so `debugOnRebuildDirtyWidget`
+never fires. Its first build (`mount`) skips `Element.rebuild` too. The only
+build of one that is counted is a changed `InheritedWidget` dependency (for
+example `Padding` reading `Directionality`) when no parent rebuilt it in the
+same frame. A budget such as `rebuiltAtMost(0, of: ColoredBox)` therefore
+passes even when the `ColoredBox` gets a new color every frame, and
+`mountedAtMost` does not see new render-object elements. Budget the widget
+that *builds* them instead (the stateless or stateful widget above them),
+which is counted. This is a framework limitation tracked upstream in
+[flutter/flutter#71626](https://github.com/flutter/flutter/issues/71626), and
+DevTools' "Track widget rebuilds" shares it because it uses the same hook.
+Counting these updates separately is planned in
+[#10](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/10).
 
 **Should every widget have a budget?**
 No. Count the few hot spots that matter (a bottom nav under a poll, a list
@@ -289,7 +325,9 @@ The counters and matchers do. Baseline files need a file system, so
 `matchesRebuildBaseline` throws `UnsupportedError` on the web.
 
 **Which Flutter versions?**
-Flutter 3.27 (Dart 3.6) and newer. CI runs the suite on 3.27.4 and 3.47.7.
+The package: Flutter 3.27 (Dart 3.6) and newer. CI runs its suite on 3.27.4
+and 3.47.7. The [`example/`](example) app needs Flutter 3.32 (Dart 3.8) or
+newer, because `flutter_riverpod` 3 does; CI runs it on 3.47.7.
 
 ## Comparison
 

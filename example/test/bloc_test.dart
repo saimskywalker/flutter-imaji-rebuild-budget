@@ -40,8 +40,9 @@ Future<RebuildCounter> fiveProgressTicks(
 }
 
 void main() {
-  testWidgets('BEFORE: a BlocBuilder redraws the file name on every tick',
-      (tester) async {
+  testWidgets('BEFORE: a BlocBuilder redraws the file name on every tick', (
+    tester,
+  ) async {
     final window = await fiveProgressTicks(tester, selective: false);
 
     expect(
