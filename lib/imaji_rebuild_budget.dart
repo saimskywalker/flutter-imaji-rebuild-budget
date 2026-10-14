@@ -10,6 +10,7 @@
 /// await tester.pump();
 /// window.close();
 ///
+/// expect(window, interactionHappened(rebuilt: CounterText));
 /// expect(window, rebuiltAtMost(0, of: ProductList));
 /// ```
 ///
@@ -22,6 +23,7 @@ import 'package:flutter/widgets.dart' show debugOnRebuildDirtyWidget;
 
 import 'src/rebuild_counter.dart';
 
+export 'src/interaction.dart' show interactionHappened;
 export 'src/matchers.dart'
     show mountedAtMost, rebuiltAtMost, subtreeRebuiltAtMost;
 export 'src/rebuild_counter.dart' show RebuildCounter, RebuildRecord;
