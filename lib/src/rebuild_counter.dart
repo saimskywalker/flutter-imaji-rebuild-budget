@@ -79,6 +79,14 @@ class RebuildRecord {
 /// a later build of one of them counts as a rebuild and a build of anything
 /// new counts as a mount.
 ///
+/// Render-object widgets (`ColoredBox`, `Padding`, `SizedBox`, `RichText`,
+/// ...) are mostly not counted. Flutter does not call the hook when a
+/// parent hands a `RenderObjectElement` a new widget (its `update` calls
+/// `updateRenderObject` without going through `Element.rebuild`), nor when
+/// one is first mounted; only a changed inherited dependency reaches it. See
+/// [flutter/flutter#71626](https://github.com/flutter/flutter/issues/71626).
+/// Budget the widget that builds them instead.
+///
 /// Windows can overlap and nest. A hook that was installed before the first
 /// window opened keeps receiving every call and is put back when the last
 /// window closes. A window that is still open when its test ends is closed

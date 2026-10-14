@@ -39,3 +39,6 @@ testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone',
 
 The state libraries are dependencies of this example only;
 `imaji_rebuild_budget` itself depends on nothing but Flutter.
+
+This example needs Flutter 3.32 (Dart 3.8) or newer, because
+`flutter_riverpod` 3 does; the package itself supports Flutter 3.27 and newer.

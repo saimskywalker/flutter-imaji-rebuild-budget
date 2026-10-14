@@ -13,8 +13,9 @@ Future<RebuildCounter> applyCoupon(WidgetTester tester, Widget badge) async {
       ),
     ),
   );
-  final container =
-      ProviderScope.containerOf(tester.element(find.byWidget(badge)));
+  final container = ProviderScope.containerOf(
+    tester.element(find.byWidget(badge)),
+  );
 
   final window = RebuildCounter.open(label: 'apply a coupon');
   container.read(cartProvider.notifier).applyCoupon('SPRING');
@@ -24,8 +25,7 @@ Future<RebuildCounter> applyCoupon(WidgetTester tester, Widget badge) async {
 }
 
 void main() {
-  testWidgets(
-      'BEFORE: ref.watch(cartProvider) rebuilds the item badge for a '
+  testWidgets('BEFORE: ref.watch(cartProvider) rebuilds the item badge for a '
       'coupon', (tester) async {
     final window = await applyCoupon(tester, const CartBadgeSlow());
 
@@ -33,16 +33,18 @@ void main() {
     expect(window, isNot(rebuiltAtMost(0, of: CartBadgeSlow)));
   });
 
-  testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone',
-      (tester) async {
+  testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone', (
+    tester,
+  ) async {
     final window = await applyCoupon(tester, const CartBadgeFast());
 
     expect(window, interactionHappened(rebuilt: CouponLabel));
     expect(window, rebuiltAtMost(0, of: CartBadgeFast));
   });
 
-  testWidgets('the fixed badge still rebuilds when the item count changes',
-      (tester) async {
+  testWidgets('the fixed badge still rebuilds when the item count changes', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const ProviderScope(
         child: Directionality(
@@ -51,8 +53,9 @@ void main() {
         ),
       ),
     );
-    final container =
-        ProviderScope.containerOf(tester.element(find.byType(CartBadgeFast)));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(CartBadgeFast)),
+    );
 
     final window = RebuildCounter.open();
     container.read(cartProvider.notifier).add('Desk');

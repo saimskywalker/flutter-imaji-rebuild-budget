@@ -6,7 +6,9 @@ description: >-
 publish_to: none
 
 environment:
-  sdk: ^3.6.0
+  # flutter_riverpod 3 requires Dart 3.8 (Flutter 3.32); the package itself
+  # supports Dart 3.6.
+  sdk: ^3.8.0
 
 dependencies:
   flutter:

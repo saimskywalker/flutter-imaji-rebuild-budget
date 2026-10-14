@@ -20,10 +20,12 @@ class DownloadCubit extends Cubit<Download> {
   DownloadCubit(String fileName) : super(Download(fileName: fileName));
 
   /// Records ten more percent of the file.
-  void progress() => emit(Download(
-        fileName: state.fileName,
-        percent: (state.percent + 10).clamp(0, 100),
-      ));
+  void progress() => emit(
+    Download(
+      fileName: state.fileName,
+      percent: (state.percent + 10).clamp(0, 100),
+    ),
+  );
 }
 
 /// The file name. Its own widget never rebuilds; what happens inside it is
