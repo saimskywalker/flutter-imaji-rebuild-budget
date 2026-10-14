@@ -319,6 +319,14 @@ class RebuildCounter {
     }
   }
 
+  @override
+  String toString() {
+    final state = _open ? 'open' : 'closed';
+    final name = label == null ? '' : '"$label", ';
+    return 'RebuildCounter($name$state, ${_rebuilds.length} rebuilds, '
+        '${_mounts.length} mounts)';
+  }
+
   void _requireClosed(String action) {
     if (_open) {
       throw StateError(
