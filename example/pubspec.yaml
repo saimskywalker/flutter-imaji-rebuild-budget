@@ -1,0 +1,23 @@
+name: imaji_rebuild_budget_example
+description: >-
+  Real Flutter over-rebuilds caught by imaji_rebuild_budget and fixed:
+  setState at the root, unstable keys, Riverpod watch vs select, Provider
+  watch vs select, and Bloc builders that ignore what they show.
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.0
+  flutter_riverpod: ^3.0.0
+  provider: ^6.1.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+  imaji_rebuild_budget:
+    path: ../
