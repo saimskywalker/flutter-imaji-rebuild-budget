@@ -122,14 +122,14 @@ frames pumped after the interaction cannot change the result.
 ```dart
 // A widget type, a private type by name, or every rebuild in the window.
 expect(window, rebuiltAtMost(0, of: NavigationBar));
-expect(window, rebuiltAtMost(2, named: '_ProfileHeader'));
+expect(window, rebuiltAtMost(2, named: '_FeedHeader'));
 expect(window, rebuiltAtMost(40));
 
 // A whole subtree: catches a busy Consumer or ValueListenableBuilder deep
 // inside a widget whose own root never rebuilt. A finder that finds nothing
 // fails rather than passes.
 expect(window, subtreeRebuiltAtMost(0, under: find.byType(BottomNavigationBar)));
-expect(window, subtreeRebuiltAtMost(1, under: find.byKey(miniPlayerKey), of: PlayButton));
+expect(window, subtreeRebuiltAtMost(1, under: find.byKey(cartKey), of: PriceTag));
 
 // New elements: a UniqueKey() in build, or a subtree whose type flips, remounts
 // and loses its State.
@@ -140,7 +140,7 @@ expect(window, interactionHappened(
   scrollOffsetMoved: find.byType(ListView),   // the offset changed
   fetchCount: 5,                              // or greaterThan(0)
   counters: {'saves': 1},                     // named counters from open()
-  rebuilt: BalanceText,                       // this type rebuilt at least once
+  rebuilt: UnreadBadge,                       // this type rebuilt at least once
 ));
 ```
 
@@ -148,7 +148,7 @@ expect(window, interactionHappened(
 when the window opens and when it closes:
 
 ```dart
-final api = FakeWalletApi();
+final api = FakeInboxApi();
 final window = RebuildCounter.open(fetchCount: () => api.calls);
 for (var i = 0; i < 5; i++) {
   await tester.pump(const Duration(seconds: 15)); // the poll interval
@@ -238,7 +238,7 @@ small test file:
 | Keys | `UniqueKey()` in `build` remounts every row | `ValueKey(id)` | `mountedAtMost` |
 | Riverpod | `ref.watch(cartProvider)` for one field | `ref.watch(cartProvider.select(...))` | `rebuiltAtMost` |
 | Provider | `context.watch<T>()` for one field | `context.select<T, R>(...)` | `rebuiltAtMost` |
-| Bloc | `BlocBuilder` redraws a title on every tick | `BlocSelector` | `subtreeRebuiltAtMost` |
+| Bloc | `BlocBuilder` redraws a file name on every progress tick | `BlocSelector` | `subtreeRebuiltAtMost` |
 
 The state libraries are dependencies of the example only; this package depends
 on nothing but Flutter.

@@ -1,11 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget_example/provider/player_settings.dart';
+import 'package:imaji_rebuild_budget_example/provider/reader_settings.dart';
 import 'package:provider/provider.dart';
 
 Future<RebuildCounter> toggleTheme(WidgetTester tester, Widget label) async {
-  final settings = PlayerSettings();
+  final settings = ReaderSettings();
   addTearDown(settings.dispose);
   await tester.pumpWidget(
     ChangeNotifierProvider.value(
@@ -26,18 +26,18 @@ Future<RebuildCounter> toggleTheme(WidgetTester tester, Widget label) async {
 
 void main() {
   testWidgets(
-      'BEFORE: context.watch rebuilds the volume label for a theme '
+      'BEFORE: context.watch rebuilds the text-size label for a theme '
       'change', (tester) async {
-    final window = await toggleTheme(tester, const VolumeLabelSlow());
+    final window = await toggleTheme(tester, const FontSizeLabelSlow());
 
     expect(window, interactionHappened(rebuilt: ThemeLabel));
-    expect(window, isNot(rebuiltAtMost(0, of: VolumeLabelSlow)));
+    expect(window, isNot(rebuiltAtMost(0, of: FontSizeLabelSlow)));
   });
 
   testWidgets('AFTER: context.select leaves it alone', (tester) async {
-    final window = await toggleTheme(tester, const VolumeLabelFast());
+    final window = await toggleTheme(tester, const FontSizeLabelFast());
 
     expect(window, interactionHappened(rebuilt: ThemeLabel));
-    expect(window, rebuiltAtMost(0, of: VolumeLabelFast));
+    expect(window, rebuiltAtMost(0, of: FontSizeLabelFast));
   });
 }
