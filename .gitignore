@@ -6,8 +6,8 @@ pubspec.lock
 .flutter-plugins-dependencies
 .idea/
 *.iml
+.vscode/
 .DS_Store
-android/.gradle/
-android/local.properties
-example/ios/Pods/
-example/.flutter-plugins*
+example/.dart_tool/
+example/build/
+example/pubspec.lock
