@@ -1,8 +1,7 @@
 name: imaji_rebuild_budget
 description: >-
-  Fail Flutter widget tests when a widget rebuilds more than its measured
-  budget. A Dart test helper for catching unnecessary widget rebuilds:
-  headless, no device, no probes in production code.
+  Catch unnecessary widget rebuilds in Flutter: a Dart test helper that fails
+  widget tests over a measured rebuild budget. Headless, no device, no probes.
 version: 0.1.0
 homepage: https://github.com/saimskywalker/flutter-imaji-rebuild-budget
 repository: https://github.com/saimskywalker/flutter-imaji-rebuild-budget
