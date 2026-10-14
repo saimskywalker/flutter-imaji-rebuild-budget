@@ -23,6 +23,7 @@ import 'package:flutter/widgets.dart' show debugOnRebuildDirtyWidget;
 
 import 'src/rebuild_counter.dart';
 
+export 'src/baseline.dart' show matchesRebuildBaseline;
 export 'src/interaction.dart' show interactionHappened;
 export 'src/matchers.dart'
     show mountedAtMost, rebuiltAtMost, subtreeRebuiltAtMost;
