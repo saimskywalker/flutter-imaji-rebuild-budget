@@ -19,8 +19,9 @@ Future<RebuildCounter> _threeTicks(WidgetTester tester) async {
 
 void main() {
   group('a clock ticking with setState', () {
-    testWidgets('BEFORE: at the screen root, rebuilds every product tile',
-        (tester) async {
+    testWidgets('BEFORE: at the screen root, rebuilds every product tile', (
+      tester,
+    ) async {
       await tester.pumpWidget(_host(const TickingShopSlow()));
 
       final window = await _threeTicks(tester);
@@ -32,8 +33,9 @@ void main() {
       expect(window.countOf(ProductTile), 15);
     });
 
-    testWidgets('AFTER: in its own widget, rebuilds the clock alone',
-        (tester) async {
+    testWidgets('AFTER: in its own widget, rebuilds the clock alone', (
+      tester,
+    ) async {
       await tester.pumpWidget(_host(const TickingShopFast()));
 
       final window = await _threeTicks(tester);
@@ -59,8 +61,9 @@ void main() {
       return window;
     }
 
-    testWidgets('BEFORE: UniqueKey in build remounts every row',
-        (tester) async {
+    testWidgets('BEFORE: UniqueKey in build remounts every row', (
+      tester,
+    ) async {
       final window = await reverse(tester, false);
 
       expect(window, interactionHappened(rebuilt: SortableResults));
@@ -69,8 +72,9 @@ void main() {
       expect(window.mountsOf(ResultTile), 10);
     });
 
-    testWidgets('AFTER: a ValueKey per result moves the rows instead',
-        (tester) async {
+    testWidgets('AFTER: a ValueKey per result moves the rows instead', (
+      tester,
+    ) async {
       final window = await reverse(tester, true);
 
       expect(window, interactionHappened(rebuilt: SortableResults));

@@ -25,6 +25,12 @@ const int defaultTopTypes = 10;
 /// The budget should be the count measured when the test was written
 /// (see [RebuildCounter.printCounts]). Raising it is a decision to accept
 /// more rebuilds, not a way to make a red test green.
+///
+/// A budget [of] a render-object widget such as `ColoredBox` or `Padding`
+/// passes even when a parent hands it a new widget every frame: Flutter
+/// does not report that update to `debugOnRebuildDirtyWidget`
+/// ([flutter/flutter#71626](https://github.com/flutter/flutter/issues/71626)).
+/// Budget the widget that builds them instead.
 Matcher rebuiltAtMost(
   int budget, {
   Type? of,
@@ -92,6 +98,10 @@ Matcher subtreeRebuiltAtMost(
 /// `initState`, lost scroll positions and text selections. A widget that
 /// gets a `UniqueKey()` in `build`, or a subtree whose type changes on
 /// every frame, shows up here.
+///
+/// New render-object elements (`ColoredBox`, `Padding`, ...) are not seen,
+/// because Flutter does not call `debugOnRebuildDirtyWidget` when one is
+/// mounted; count the widget that builds them instead.
 Matcher mountedAtMost(int budget, {Type? of, int top = defaultTopTypes}) {
   _checkBudget(budget);
   return _BudgetMatcher(

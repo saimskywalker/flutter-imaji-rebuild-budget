@@ -25,8 +25,7 @@ Future<RebuildCounter> toggleTheme(WidgetTester tester, Widget label) async {
 }
 
 void main() {
-  testWidgets(
-      'BEFORE: context.watch rebuilds the text-size label for a theme '
+  testWidgets('BEFORE: context.watch rebuilds the text-size label for a theme '
       'change', (tester) async {
     final window = await toggleTheme(tester, const FontSizeLabelSlow());
 

@@ -21,8 +21,10 @@ flutter test
 (cd example && flutter pub get && flutter analyze && flutter test)
 ```
 
-CI runs the same steps, on the oldest supported Flutter (3.27) and on the
-current stable.
+CI runs the package steps on the oldest supported Flutter (3.27, with
+`flutter pub get --no-example`) and on the current stable. The example needs
+Flutter 3.32 (Dart 3.8) or newer for `flutter_riverpod` 3, so CI runs it on
+the current stable only.
 
 Some ground rules:
 
