@@ -2,20 +2,23 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget_example/bloc/playback.dart';
+import 'package:imaji_rebuild_budget_example/bloc/download.dart';
 
-Future<RebuildCounter> playFiveSeconds(
+Future<RebuildCounter> fiveProgressTicks(
   WidgetTester tester, {
   required bool selective,
 }) async {
-  final cubit = PlaybackCubit('Track one');
+  final cubit = DownloadCubit('report.pdf');
   await tester.pumpWidget(
     BlocProvider.value(
       value: cubit,
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: Column(
-          children: [TrackTitle(selective: selective), const PositionText()],
+          children: [
+            FileNameText(selective: selective),
+            const ProgressText(),
+          ],
         ),
       ),
     ),
@@ -23,11 +26,11 @@ Future<RebuildCounter> playFiveSeconds(
 
   var ticks = 0;
   final window = RebuildCounter.open(
-    label: 'five seconds of playback',
+    label: 'five progress ticks',
     counters: {'ticks': () => ticks},
   );
   for (var i = 0; i < 5; i++) {
-    cubit.tick();
+    cubit.progress();
     ticks++;
     await tester.pump();
   }
@@ -37,30 +40,31 @@ Future<RebuildCounter> playFiveSeconds(
 }
 
 void main() {
-  testWidgets('BEFORE: a BlocBuilder redraws the title on every tick',
+  testWidgets('BEFORE: a BlocBuilder redraws the file name on every tick',
       (tester) async {
-    final window = await playFiveSeconds(tester, selective: false);
+    final window = await fiveProgressTicks(tester, selective: false);
 
     expect(
       window,
-      interactionHappened(counters: {'ticks': 5}, rebuilt: PositionText),
+      interactionHappened(counters: {'ticks': 5}, rebuilt: ProgressText),
     );
-    // TrackTitle itself never rebuilds, so a per-type budget on it passes...
-    expect(window, rebuiltAtMost(0, of: TrackTitle));
+    // FileNameText itself never rebuilds, so a per-type budget on it
+    // passes...
+    expect(window, rebuiltAtMost(0, of: FileNameText));
     // ...but the subtree budget sees the builder inside it.
     expect(
       window,
-      isNot(subtreeRebuiltAtMost(0, under: find.byType(TrackTitle))),
+      isNot(subtreeRebuiltAtMost(0, under: find.byType(FileNameText))),
     );
   });
 
-  testWidgets('AFTER: a BlocSelector on the title stays quiet', (tester) async {
-    final window = await playFiveSeconds(tester, selective: true);
+  testWidgets('AFTER: a BlocSelector on the name stays quiet', (tester) async {
+    final window = await fiveProgressTicks(tester, selective: true);
 
     expect(
       window,
-      interactionHappened(counters: {'ticks': 5}, rebuilt: PositionText),
+      interactionHappened(counters: {'ticks': 5}, rebuilt: ProgressText),
     );
-    expect(window, subtreeRebuiltAtMost(0, under: find.byType(TrackTitle)));
+    expect(window, subtreeRebuiltAtMost(0, under: find.byType(FileNameText)));
   });
 }

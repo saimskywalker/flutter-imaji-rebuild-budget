@@ -24,13 +24,13 @@ import 'rebuild_counter.dart';
 ///   showing that the screen reacted at all.
 ///
 /// ```dart
-/// final window = RebuildCounter.open(fetchCount: () => api.walletCalls);
+/// final window = RebuildCounter.open(fetchCount: () => inbox.fetches);
 /// for (var i = 0; i < 5; i++) {
 ///   await tester.pump(const Duration(seconds: 15));
 /// }
 /// window.close();
 ///
-/// expect(window, interactionHappened(fetchCount: 5, rebuilt: BalanceText));
+/// expect(window, interactionHappened(fetchCount: 5, rebuilt: UnreadBadge));
 /// expect(window, rebuiltAtMost(0, of: NavigationBar));
 /// ```
 ///

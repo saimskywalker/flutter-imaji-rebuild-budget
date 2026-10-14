@@ -1,20 +1,20 @@
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-/// Settings for a music player.
-class PlayerSettings extends ChangeNotifier {
-  double _volume = 0.5;
+/// Settings for an article reader.
+class ReaderSettings extends ChangeNotifier {
+  double _fontSize = 16;
   bool _darkMode = false;
 
-  /// The volume, from 0 to 1.
-  double get volume => _volume;
+  /// The body text size.
+  double get fontSize => _fontSize;
 
   /// Whether the dark theme is on.
   bool get darkMode => _darkMode;
 
-  /// Sets the volume.
-  set volume(double value) {
-    _volume = value;
+  /// Sets the body text size.
+  set fontSize(double value) {
+    _fontSize = value;
     notifyListeners();
   }
 
@@ -27,26 +27,26 @@ class PlayerSettings extends ChangeNotifier {
 
 /// BEFORE: `context.watch` rebuilds the label on every change to the
 /// settings, including the theme it does not show.
-class VolumeLabelSlow extends StatelessWidget {
+class FontSizeLabelSlow extends StatelessWidget {
   /// Creates the label.
-  const VolumeLabelSlow({super.key});
+  const FontSizeLabelSlow({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final volume = context.watch<PlayerSettings>().volume;
-    return Text('Volume ${(volume * 100).round()}%');
+    final size = context.watch<ReaderSettings>().fontSize;
+    return Text('Text size ${size.round()}');
   }
 }
 
-/// AFTER: `context.select` rebuilds the label only when the volume changes.
-class VolumeLabelFast extends StatelessWidget {
+/// AFTER: `context.select` rebuilds the label only when the size changes.
+class FontSizeLabelFast extends StatelessWidget {
   /// Creates the label.
-  const VolumeLabelFast({super.key});
+  const FontSizeLabelFast({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final volume = context.select<PlayerSettings, double>((s) => s.volume);
-    return Text('Volume ${(volume * 100).round()}%');
+    final size = context.select<ReaderSettings, double>((s) => s.fontSize);
+    return Text('Text size ${size.round()}');
   }
 }
 
@@ -57,7 +57,7 @@ class ThemeLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = context.select<PlayerSettings, bool>((s) => s.darkMode);
+    final dark = context.select<ReaderSettings, bool>((s) => s.darkMode);
     return Text(dark ? 'Dark' : 'Light');
   }
 }
