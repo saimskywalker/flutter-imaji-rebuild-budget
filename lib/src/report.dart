@@ -23,9 +23,9 @@ String busiestTable(
   List<RebuildRecord> records, {
   int top = 10,
   Map<String, int> budgets = const {},
-  String noun = 'rebuilds',
+  String noun = 'rebuild',
 }) {
-  if (records.isEmpty) return 'no $noun were recorded';
+  if (records.isEmpty) return 'no ${noun}s were recorded';
 
   final counts = groupByType(records);
   final rows = <String>[
@@ -41,8 +41,8 @@ String busiestTable(
 
   final hidden = counts.length - rows.where(counts.containsKey).length;
   final buffer = StringBuffer(
-    '${records.length} $noun across ${counts.length} widget '
-    '${counts.length == 1 ? 'type' : 'types'}, busiest first:',
+    '${counted(records.length, noun)} across '
+    '${counted(counts.length, 'widget type')}, busiest first:',
   );
   for (final name in rows) {
     final count = counts[name] ?? 0;
@@ -59,8 +59,7 @@ String busiestTable(
     buffer.write(line.toString().trimRight());
   }
   if (hidden > 0) {
-    buffer.write('\n  ... and $hidden more '
-        '${hidden == 1 ? 'type' : 'types'}');
+    buffer.write('\n  ... and $hidden more ${hidden == 1 ? 'type' : 'types'}');
   }
   return buffer.toString();
 }
@@ -70,8 +69,8 @@ String printReport(RebuildCounter window) {
   final name = window.label == null ? 'window' : 'window "${window.label}"';
   final counts = window.countsByType();
   final buffer = StringBuffer(
-    '[rebuild counts] $name: ${window.total} rebuilds, '
-    '${window.mounts.length} mounts',
+    '[rebuild counts] $name: ${counted(window.total, 'rebuild')}, '
+    '${counted(window.mounts.length, 'mount')}',
   );
   final width = counts.values
       .map((n) => '$n'.length)
@@ -90,3 +89,7 @@ String printReport(RebuildCounter window) {
 String printMeasurement(String what, int measured, int budget) =>
     '[rebuild counts] $what: measured $measured, budget $budget'
     '${measured > budget ? ' (OVER)' : ''}';
+
+/// [count] followed by [noun], with an `s` unless [count] is one.
+String counted(int count, String noun) =>
+    '$count $noun${count == 1 ? '' : 's'}';

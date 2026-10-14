@@ -194,7 +194,7 @@ class _BudgetMatcher extends Matcher {
           scope,
           top: top,
           budgets: key == null ? const {} : {key: budget},
-          noun: verb == 'mounted' ? 'mounts' : 'rebuilds',
+          noun: verb == 'mounted' ? 'mount' : 'rebuild',
         ));
   }
 }
