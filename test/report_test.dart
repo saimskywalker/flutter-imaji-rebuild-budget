@@ -80,7 +80,7 @@ void main() {
 
   test('busiestTable on nothing', () {
     expect(busiestTable(const []), 'no rebuilds were recorded');
-    expect(busiestTable(const [], noun: 'mounts'), 'no mounts were recorded');
+    expect(busiestTable(const [], noun: 'mount'), 'no mounts were recorded');
   });
 
   test('printMeasurement flags an overrun', () {
