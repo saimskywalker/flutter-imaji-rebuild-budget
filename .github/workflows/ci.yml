@@ -30,11 +30,13 @@ jobs:
           flutter-version: ${{ matrix.flutter }}
           cache: true
       - run: flutter --version
-      - run: flutter pub get
+      # The example's state libraries need a newer SDK than the package
+      # floor; the example job covers it on the current stable.
+      - run: flutter pub get --no-example
       - name: Check formatting
         if: matrix.flutter == '3.47.7'
         run: dart format --output=none --set-exit-if-changed lib test example
-      - run: flutter analyze
+      - run: flutter analyze lib test
       - run: flutter test
 
   example:
