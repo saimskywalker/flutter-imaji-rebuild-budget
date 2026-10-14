@@ -172,6 +172,16 @@ void main() {
       );
     });
 
+    testWidgets('describes itself', (tester) async {
+      final window = RebuildCounter.open(label: 'tap');
+      expect('$window', 'RebuildCounter("tap", open, 0 rebuilds, 0 mounts)');
+      window.close();
+      expect(
+        '${RebuildCounter.open()..close()}',
+        'RebuildCounter(closed, 0 rebuilds, 0 mounts)',
+      );
+    });
+
     testWidgets('releases the hook when it closes', (tester) async {
       expect(debugOnRebuildDirtyWidget, isNull);
       final window = RebuildCounter.open();
