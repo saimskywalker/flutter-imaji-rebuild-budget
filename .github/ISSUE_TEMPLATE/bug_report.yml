@@ -1,0 +1,74 @@
+name: Bug report
+description: A budget that passes or fails when it should not, or a confusing failure message.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The most useful report is a single `testWidgets` with an inline
+        widget that shows the problem. Security problems go through the
+        Security tab, not here.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: "0.1.1"
+    validations:
+      required: true
+  - type: textarea
+    id: flutter
+    attributes:
+      label: "`flutter --version`"
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: state
+    attributes:
+      label: State management, if any
+      placeholder: "setState, Riverpod 3, Provider, Bloc, ..."
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest test that shows the problem.
+      render: dart
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: The full failure output of `flutter test`.
+      render: text
+    validations:
+      required: true
+  - type: dropdown
+    id: ai-use
+    attributes:
+      label: Did you use an AI tool to write this issue?
+      options:
+        - "No"
+        - "Yes, for parts"
+        - "Yes, mostly"
+    validations:
+      required: true
+  - type: input
+    id: ai-tool
+    attributes:
+      label: If yes, which tool and model?
+      description: Required if you answered yes above.
+      placeholder: "e.g. Claude Code, Opus 5.5"
+  - type: checkboxes
+    id: own-words
+    attributes:
+      label: Your own words
+      options:
+        - label: I wrote this issue in my own words.
+          required: true
