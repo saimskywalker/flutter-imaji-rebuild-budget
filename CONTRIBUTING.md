@@ -35,6 +35,19 @@ Some ground rules:
   that pins it, and keep it telling the reader *what* rebuilt.
 - Keep commits small, with messages that say why.
 
+## AI-assisted contributions
+
+AI tools are fine to use; we just ask you to be open about it.
+
+- Say in the PR description which AI tools you used, if any: none, some or
+  most, plus the tool or agent and the model (for example "Claude Code,
+  Opus 5.5" or "Copilot, GPT-5"). The pull request template has a box for it.
+- Write the PR description and issues yourself, in your own words. Please
+  don't paste generated text; short, plain descriptions are welcome.
+- Read, run and test every line you submit, and be ready to explain it in
+  review.
+- Pull requests without the disclosure may be closed.
+
 ## Releasing
 
 1. Update `version` in `pubspec.yaml` and add a `CHANGELOG.md` entry.
