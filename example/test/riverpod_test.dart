@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rebuildcop/rebuildcop.dart';
 import 'package:rebuildcop_example/riverpod/cart.dart';
 
-Future<RebuildCounter> applyCoupon(WidgetTester tester, Widget badge) async {
+Future<RebuildWindow> applyCoupon(WidgetTester tester, Widget badge) async {
   await tester.pumpWidget(
     ProviderScope(
       child: Directionality(
@@ -17,7 +17,7 @@ Future<RebuildCounter> applyCoupon(WidgetTester tester, Widget badge) async {
     tester.element(find.byWidget(badge)),
   );
 
-  final window = RebuildCounter.open(label: 'apply a coupon');
+  final window = RebuildWindow.open(label: 'apply a coupon');
   container.read(cartProvider.notifier).applyCoupon('SPRING');
   await tester.pump();
   window.close();
@@ -57,7 +57,7 @@ void main() {
       tester.element(find.byType(CartBadgeFast)),
     );
 
-    final window = RebuildCounter.open();
+    final window = RebuildWindow.open();
     container.read(cartProvider.notifier).add('Desk');
     await tester.pump();
     window.close();

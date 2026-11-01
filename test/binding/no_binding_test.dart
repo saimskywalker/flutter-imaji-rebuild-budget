@@ -12,7 +12,7 @@ void main() {
 
   test('open refuses to run and says where to open windows', () {
     expect(
-      RebuildCounter.open,
+      RebuildWindow.open,
       throwsA(
         isA<StateError>().having(
           (e) => e.message,

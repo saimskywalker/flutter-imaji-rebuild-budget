@@ -22,7 +22,7 @@ void main() {
       ),
     );
 
-    final window = RebuildCounter.open();
+    final window = RebuildWindow.open();
     label.value++;
     await tester.pump();
     window.close();

@@ -4,7 +4,7 @@ import 'package:rebuildcop/rebuildcop.dart';
 import 'package:rebuildcop_example/provider/reader_settings.dart';
 import 'package:provider/provider.dart';
 
-Future<RebuildCounter> toggleTheme(WidgetTester tester, Widget label) async {
+Future<RebuildWindow> toggleTheme(WidgetTester tester, Widget label) async {
   final settings = ReaderSettings();
   addTearDown(settings.dispose);
   await tester.pumpWidget(
@@ -17,7 +17,7 @@ Future<RebuildCounter> toggleTheme(WidgetTester tester, Widget label) async {
     ),
   );
 
-  final window = RebuildCounter.open(label: 'toggle dark mode');
+  final window = RebuildWindow.open(label: 'toggle dark mode');
   settings.toggleDarkMode();
   await tester.pump();
   window.close();

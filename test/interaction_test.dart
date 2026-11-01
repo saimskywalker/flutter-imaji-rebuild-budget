@@ -9,7 +9,7 @@ void main() {
     testWidgets('passes when the list scrolled', (tester) async {
       await pumpList(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await tester.drag(find.byType(ListView), const Offset(0, -400));
       await tester.pumpAndSettle();
       window.close();
@@ -23,7 +23,7 @@ void main() {
     testWidgets('fails when the drag missed', (tester) async {
       await pumpList(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       // A horizontal drag on a vertical list moves nothing.
       await tester.drag(find.byType(ListView), const Offset(-400, 0));
       await tester.pumpAndSettle();
@@ -39,7 +39,7 @@ void main() {
 
     testWidgets('fails when the finder finds nothing', (tester) async {
       await pumpList(tester);
-      final window = RebuildCounter.open()..close();
+      final window = RebuildWindow.open()..close();
 
       expect(
         mismatchOf(
@@ -53,7 +53,7 @@ void main() {
     testWidgets('fails when the scrollable appeared after the window opened',
         (tester) async {
       await tester.pumpWidget(const SizedBox());
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await pumpList(tester);
       window.close();
 
@@ -71,7 +71,7 @@ void main() {
     testWidgets('match an exact count or any matcher', (tester) async {
       var fetches = 0;
       var saves = 0;
-      final window = RebuildCounter.open(
+      final window = RebuildWindow.open(
         fetchCount: () => fetches,
         counters: {'saves': () => saves},
       );
@@ -90,7 +90,7 @@ void main() {
 
     testWidgets('a zero fetch count is no proof', (tester) async {
       const fetches = 0;
-      final window = RebuildCounter.open(fetchCount: () => fetches)..close();
+      final window = RebuildWindow.open(fetchCount: () => fetches)..close();
 
       expect(
         mismatchOf(interactionHappened(fetchCount: greaterThan(0)), window),
@@ -99,7 +99,7 @@ void main() {
     });
 
     testWidgets('name a counter the window was not given', (tester) async {
-      final window = RebuildCounter.open()..close();
+      final window = RebuildWindow.open()..close();
 
       expect(
         mismatchOf(interactionHappened(fetchCount: 1), window),
@@ -114,8 +114,8 @@ void main() {
 
   group('rebuilt', () {
     testWidgets('requires at least one rebuild of the type', (tester) async {
-      final screen = await pumpScreen(tester);
-      final window = RebuildCounter.open();
+      final screen = await showScreen(tester);
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -130,7 +130,7 @@ void main() {
 
   testWidgets('lists every unmet condition', (tester) async {
     await pumpList(tester);
-    final window = RebuildCounter.open(fetchCount: () => 0)..close();
+    final window = RebuildWindow.open(fetchCount: () => 0)..close();
 
     final message = mismatchOf(
       interactionHappened(
@@ -156,7 +156,7 @@ void main() {
   });
 
   testWidgets('refuses an open window', (tester) async {
-    final window = RebuildCounter.open(fetchCount: () => 0);
+    final window = RebuildWindow.open(fetchCount: () => 0);
     final message = mismatchOf(interactionHappened(fetchCount: 0), window);
     window.close();
     expect(message, contains('still open'));

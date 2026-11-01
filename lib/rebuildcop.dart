@@ -1,30 +1,15 @@
 /// Rebuild budgets for Flutter widget tests.
 ///
-/// Open a [RebuildCounter] window around an interaction, close it, and
-/// assert that a widget type or a whole subtree rebuilt no more than a
-/// measured budget:
+/// Open a `RebuildWindow` around an interaction, close it, and assert on it
+/// with `rebuiltAtMost`, `subtreeRebuiltAtMost`, `mountedAtMost`,
+/// `interactionHappened` and `matchesRebuildBaseline`.
 ///
-/// ```dart
-/// final window = RebuildCounter.open();
-/// await tester.tap(find.byIcon(Icons.add));
-/// await tester.pump();
-/// window.close();
-///
-/// expect(window, interactionHappened(rebuilt: CounterText));
-/// expect(window, rebuiltAtMost(0, of: ProductList));
-/// ```
-///
-/// It listens to Flutter's own [debugOnRebuildDirtyWidget] hook, so it runs
-/// headless in plain `flutter test` and the code under test carries no
-/// probes.
+/// Import this library from tests only: it depends on `flutter_test`.
 library;
 
-import 'package:flutter/widgets.dart' show debugOnRebuildDirtyWidget;
-
-import 'src/rebuild_counter.dart';
-
-export 'src/baseline.dart' show matchesRebuildBaseline;
-export 'src/interaction.dart' show interactionHappened;
-export 'src/matchers.dart'
+export 'src/tally/build_record.dart' show AncestorSnapshot, BuildRecord;
+export 'src/tally/rebuild_window.dart' show RebuildWindow;
+export 'src/verdict/baseline/baseline_matcher.dart' show matchesRebuildBaseline;
+export 'src/verdict/budgets.dart'
     show mountedAtMost, rebuiltAtMost, subtreeRebuiltAtMost;
-export 'src/rebuild_counter.dart' show RebuildCounter, RebuildRecord;
+export 'src/verdict/proof.dart' show interactionHappened;

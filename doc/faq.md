@@ -15,7 +15,7 @@ or Windows runner. No device, emulator, simulator or `integration_test`. The
 hook only fires in debug builds, which is what `flutter test` always runs.
 
 **Can I show rebuild counts in a debug build of the app?**
-No. `RebuildCounter.open` throws a `StateError` unless the widgets binding is
+No. `RebuildWindow.open` throws a `StateError` unless the widgets binding is
 a `TestWidgetsFlutterBinding`, the binding `testWidgets` sets up:
 
 ```text
@@ -114,7 +114,7 @@ proof that the interaction ran.
 
 **Why do I have to call `close()`?**
 So the counts cover exactly the interaction. Frames pumped later (settling
-animations, teardown) cannot change them. Use `RebuildCounter.record` if you
+animations, teardown) cannot change them. Use `RebuildWindow.record` if you
 prefer a closure.
 
 **Does it work with `flutter test --platform chrome`?**
@@ -142,7 +142,7 @@ By hand in `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  rebuildcop: ^0.2.0
+  rebuildcop: ^0.3.0
 ```
 
 To try unreleased changes from `main` instead of a published version (it can

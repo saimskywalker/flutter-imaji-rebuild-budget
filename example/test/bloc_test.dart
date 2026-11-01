@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:rebuildcop/rebuildcop.dart';
 import 'package:rebuildcop_example/bloc/download.dart';
 
-Future<RebuildCounter> fiveProgressTicks(
+Future<RebuildWindow> fiveProgressTicks(
   WidgetTester tester, {
   required bool selective,
 }) async {
@@ -25,7 +25,7 @@ Future<RebuildCounter> fiveProgressTicks(
   );
 
   var ticks = 0;
-  final window = RebuildCounter.open(
+  final window = RebuildWindow.open(
     label: 'five progress ticks',
     counters: {'ticks': () => ticks},
   );

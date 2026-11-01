@@ -6,9 +6,9 @@ import 'support/fixtures.dart';
 import 'support/tile_a.dart' as a;
 import 'support/tile_b.dart' as b;
 
-Future<RebuildCounter> bumpOnce(WidgetTester tester, {String? label}) async {
-  final screen = await pumpScreen(tester);
-  final window = RebuildCounter.open(label: label);
+Future<RebuildWindow> bumpOnce(WidgetTester tester, {String? label}) async {
+  final screen = await showScreen(tester);
+  final window = RebuildWindow.open(label: label);
   screen.bump();
   await tester.pump();
   window.close();
@@ -113,7 +113,7 @@ void main() {
         (tester) async {
       await tester.pumpWidget(const SizedBox());
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await pumpList(tester, count: 3);
       await tester.pumpWidget(const SizedBox());
       window.close();

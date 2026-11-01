@@ -2,7 +2,7 @@ name: rebuildcop
 description: >-
   Catch unnecessary widget rebuilds in Flutter: a Dart test helper that fails
   widget tests over a measured rebuild budget. Headless, no device, no probes.
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/saimskywalker/rebuildcop
 repository: https://github.com/saimskywalker/rebuildcop
 issue_tracker: https://github.com/saimskywalker/rebuildcop/issues

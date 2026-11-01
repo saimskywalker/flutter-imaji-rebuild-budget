@@ -6,9 +6,9 @@ import 'package:rebuildcop/rebuildcop.dart';
 
 import 'support/fixtures.dart';
 
-Future<RebuildCounter> bumpOnce(WidgetTester tester, {String? label}) async {
-  final screen = await pumpScreen(tester);
-  final window = RebuildCounter.open(label: label);
+Future<RebuildWindow> bumpOnce(WidgetTester tester, {String? label}) async {
+  final screen = await showScreen(tester);
+  final window = RebuildWindow.open(label: label);
   screen.bump();
   await tester.pump();
   window.close();
@@ -64,7 +64,7 @@ void main() {
     });
 
     testWidgets('refuses an open window', (tester) async {
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       final message = mismatchOf(rebuiltAtMost(100), window);
       window.close();
 
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('refuses something that is not a window', () {
-      expect(mismatchOf(rebuiltAtMost(1), 42), 'is not a RebuildCounter');
+      expect(mismatchOf(rebuiltAtMost(1), 42), 'is not a RebuildWindow');
     });
 
     test('rejects a negative budget and conflicting selectors', () {
@@ -85,8 +85,8 @@ void main() {
 
     testWidgets('prints the measurement in print mode', (tester) async {
       final window = await bumpOnce(tester, label: 'bump');
-      RebuildCounter.printCounts = true;
-      addTearDown(() => RebuildCounter.printCounts = false);
+      RebuildWindow.printCounts = true;
+      addTearDown(() => RebuildWindow.printCounts = false);
 
       final printed = <String>[];
       runZoned(
@@ -97,7 +97,7 @@ void main() {
       );
 
       expect(printed, [
-        '[rebuild counts] CountLabel rebuilt in "bump": measured 2, budget 9',
+        '[rebuildcop] CountLabel rebuilt in "bump": measured 2, budget 9',
       ]);
     });
   });
@@ -138,7 +138,7 @@ void main() {
         ),
       );
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       notifier.value++;
       await tester.pump();
       window.close();
@@ -183,7 +183,7 @@ void main() {
         ),
       );
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       notifier.value++;
       await tester.pump();
       window.close();

@@ -4,21 +4,22 @@ Everything is exported from `package:rebuildcop/rebuildcop.dart`,
 except the [guard](#guard-keeping-the-package-out-of-the-app), which has a
 library of its own.
 
-## `RebuildCounter`, the counting window
+## `RebuildWindow`, the counting window
 
 | Member | What it does |
 |---|---|
-| `RebuildCounter.open({label, fetchCount, counters})` | Starts counting. Call it after the widget is pumped, right before the interaction. Throws a `StateError` outside `flutter test` (no `TestWidgetsFlutterBinding`). |
-| `RebuildCounter.record(() async { ... }, {...})` | Opens, runs the interaction, closes, even when it throws. |
+| `RebuildWindow.open({label, fetchCount, counters})` | Starts counting. Call it after the widget is pumped, right before the interaction. Throws a `StateError` outside `flutter test` (no `TestWidgetsFlutterBinding`). |
+| `RebuildWindow.record(() async { ... }, {...})` | Opens, runs the interaction, closes, even when it throws. |
 | `close()` | Stops counting and snapshots scroll offsets and counters. |
 | `countOf(Type)` / `countNamed('_Private')` / `countWhere(test)` | Rebuilds of an exact type, a type by name, or widgets matching a predicate. |
 | `countUnder(Finder, {of})` | Rebuilds of a subtree, optionally of one type inside it. |
 | `presentTypes` | Widget types that had an element in the tree during the window. A type budget for anything else fails. |
 | `mountsOf(Type)`, `mounts`, `rebuilds`, `total` | Raw records. A *mount* is an element built for the first time inside the window; a *rebuild* is an element that already existed building again. |
+| `BuildRecord` | One entry of `mounts` or `rebuilds`: `widget`, `widgetType`, `typeName`, `isMount`, `element`, and `ancestors` (the enclosing widgets at build time, nearest first, as `AncestorSnapshot`s). |
 | `countsByType()`, `describeBusiest({top, budgets, under})` | Per-type counts and the failure table, for your own `reason:` strings. |
 | `counterDelta(name)`, `scrollDelta(Finder)` | How much a counter or a scroll offset changed between `open` and `close`. |
-| `RebuildCounter.printCounts` | Print mode; defaults to `--dart-define=REBUILD_COUNTS=true`. |
-| `RebuildCounter.updateBaselines` | Baseline update mode; defaults to `--dart-define=UPDATE_REBUILD_BUDGETS=true`. |
+| `RebuildWindow.printCounts` | Print mode; defaults to `--dart-define=PRINT_REBUILDS=true`. |
+| `RebuildWindow.updateBaselines` | Baseline update mode; defaults to `--dart-define=UPDATE_REBUILD_BUDGETS=true`. |
 
 Windows may overlap and close in any order. A hook installed before the first
 window opens keeps receiving every call and is put back afterwards. If
@@ -62,7 +63,7 @@ when the window opens and when it closes:
 
 ```dart
 final api = FakeInboxApi();
-final window = RebuildCounter.open(fetchCount: () => api.calls);
+final window = RebuildWindow.open(fetchCount: () => api.calls);
 for (var i = 0; i < 5; i++) {
   await tester.pump(const Duration(seconds: 15)); // the poll interval
 }

@@ -6,17 +6,17 @@ Never guess a budget. Run the interaction, read the count, write that number
 down:
 
 ```sh
-flutter test --dart-define=REBUILD_COUNTS=true test/feed_test.dart
+flutter test --dart-define=PRINT_REBUILDS=true test/feed_test.dart
 ```
 
 ```
-[rebuild counts] window "three clock ticks": 42 rebuilds, 0 mounts
+[rebuildcop] window "three clock ticks": 42 rebuilds, 0 mounts
   18  Text
   15  ProductTile
    3  ClockText
    3  ProductList
    3  TickingShopSlow
-[rebuild counts] ProductTile rebuilt in "three clock ticks": measured 15, budget 0 (OVER)
+[rebuildcop] ProductTile rebuilt in "three clock ticks": measured 15, budget 0 (OVER)
 ```
 
 Every window prints its per-type counts when it closes, and every budget

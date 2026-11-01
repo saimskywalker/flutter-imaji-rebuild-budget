@@ -7,7 +7,7 @@ telling the two apart. Run them with:
 ```sh
 cd example
 flutter test
-flutter test --dart-define=REBUILD_COUNTS=true   # print every measured count
+flutter test --dart-define=PRINT_REBUILDS=true   # print every measured count
 ```
 
 | File | Over-rebuild | Fix |
@@ -25,7 +25,7 @@ testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone',
     (tester) async {
   await tester.pumpWidget(/* the screen */);
 
-  final window = RebuildCounter.open(label: 'apply a coupon');
+  final window = RebuildWindow.open(label: 'apply a coupon');
   container.read(cartProvider.notifier).applyCoupon('SPRING');
   await tester.pump();
   window.close();

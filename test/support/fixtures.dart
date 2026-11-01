@@ -70,7 +70,7 @@ class Panel extends StatelessWidget {
 }
 
 /// Pumps [Screen] and returns its state, so a test can call [ScreenState.bump].
-Future<ScreenState> pumpScreen(WidgetTester tester) async {
+Future<ScreenState> showScreen(WidgetTester tester) async {
   await tester.pumpWidget(
     const Directionality(textDirection: TextDirection.ltr, child: Screen()),
   );
@@ -103,7 +103,7 @@ class ListRow extends StatelessWidget {
 /// Pumps the `Tile` from `tile_a.dart` (when [withA]) and the one from
 /// `tile_b.dart` (when [withB]), rebuilds them once in a window labelled
 /// "tick", and returns the closed window.
-Future<RebuildCounter> tickTiles(
+Future<RebuildWindow> tickTiles(
   WidgetTester tester, {
   bool withA = false,
   bool withB = false,
@@ -125,7 +125,7 @@ Future<RebuildCounter> tickTiles(
     ),
   );
 
-  final window = RebuildCounter.open(label: 'tick');
+  final window = RebuildWindow.open(label: 'tick');
   notifier.value++;
   await tester.pump();
   window.close();
