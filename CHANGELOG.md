@@ -25,6 +25,12 @@ widget type was never built now fail
   by name, rejects two tracked entries with the same name, and does not write
   a baseline in update mode while one of its types is absent.
 - `interactionHappened(rebuilt:)` says when the type was never there at all.
+- `RebuildCounter.open` and `RebuildCounter.record` throw a `StateError`
+  unless the widgets binding is a `TestWidgetsFlutterBinding`, so a window
+  can no longer be opened in a debug run of the app, for example from a
+  debug menu. `LiveTestWidgetsFlutterBinding` and `integration_test` are
+  still allowed
+  ([#27](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/27)).
 
 ### Added
 

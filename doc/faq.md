@@ -14,6 +14,22 @@ Yes. It is plain `flutter test`: headless, on the Dart VM, on any Linux, macOS
 or Windows runner. No device, emulator, simulator or `integration_test`. The
 hook only fires in debug builds, which is what `flutter test` always runs.
 
+**Can I show rebuild counts in a debug build of the app?**
+No. `RebuildCounter.open` throws a `StateError` unless the widgets binding is
+a `TestWidgetsFlutterBinding`, the binding `testWidgets` sets up:
+
+```text
+Bad state: imaji_rebuild_budget only runs under flutter test. It must be a
+dev_dependency and must not be imported from lib/. The binding is
+WidgetsFlutterBinding, not a TestWidgetsFlutterBinding.
+```
+
+The package imports `flutter_test`, so importing it from `lib/` compiles test
+code into the app, and it would install a global framework hook in a running
+app. Keep it in `dev_dependencies`, and use DevTools to look at rebuilds in a
+running app. `LiveTestWidgetsFlutterBinding` and `integration_test`'s binding
+are test bindings too, so windows open there.
+
 **Is this a performance test?**
 No, and that is the point. It counts *work*, not milliseconds, so it is
 deterministic: the same code gives the same count on a laptop and on a

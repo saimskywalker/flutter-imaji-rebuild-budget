@@ -108,6 +108,13 @@ class RebuildCounter {
   /// when it closes, so `interactionHappened(fetchCount: ...)` can prove
   /// that the interaction reached the code it was meant to reach. They are
   /// plain callbacks into test doubles; nothing in production code changes.
+  ///
+  /// Throws a [StateError] unless the widgets binding is a
+  /// [TestWidgetsFlutterBinding], the one `testWidgets` sets up. That
+  /// includes `LiveTestWidgetsFlutterBinding` and `integration_test`'s
+  /// binding, but not the binding of a running app, so a window cannot be
+  /// opened from app code such as a debug menu. This package belongs in
+  /// `dev_dependencies` and must not be imported from `lib/`.
   static RebuildCounter open({
     String? label,
     num Function()? fetchCount,
@@ -119,6 +126,7 @@ class RebuildCounter {
         'debugOnRebuildDirtyWidget when assertions are enabled.',
       );
     }
+    _requireTestBinding();
     if (fetchCount != null && counters.containsKey(fetchCountName)) {
       throw ArgumentError.value(
         counters,
@@ -138,7 +146,8 @@ class RebuildCounter {
   /// Opens a window, runs [interaction], and closes the window, even when
   /// [interaction] throws.
   ///
-  /// The arguments mean the same as for [open].
+  /// The arguments mean the same as for [open], and the returned future
+  /// fails with the same errors, before [interaction] runs.
   static Future<RebuildCounter> record(
     Future<void> Function() interaction, {
     String? label,
@@ -343,6 +352,27 @@ class RebuildCounter {
     final name = label == null ? '' : '"$label", ';
     return 'RebuildCounter($name$state, ${_rebuilds.length} rebuilds, '
         '${_mounts.length} mounts)';
+  }
+
+  /// Throws unless the widgets binding is a [TestWidgetsFlutterBinding].
+  ///
+  /// [BindingBase.debugBindingType] is checked first because
+  /// [WidgetsBinding.instance] throws before any binding exists; it is only
+  /// reliable in debug builds, which [open] has already required.
+  static void _requireTestBinding() {
+    final bindingType = BindingBase.debugBindingType();
+    if (bindingType != null &&
+        WidgetsBinding.instance is TestWidgetsFlutterBinding) {
+      return;
+    }
+    final why = bindingType == null
+        ? 'No binding is initialized: open windows inside testWidgets, which '
+            'sets up the test binding.'
+        : 'The binding is $bindingType, not a TestWidgetsFlutterBinding.';
+    throw StateError(
+      'imaji_rebuild_budget only runs under flutter test. It must be a '
+      'dev_dependency and must not be imported from lib/. $why',
+    );
   }
 
   void _requireClosed(String action) {

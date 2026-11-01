@@ -25,6 +25,21 @@ on a mid-range phone.
 flutter pub add --dev imaji_rebuild_budget
 ```
 
+Keep it in `dev_dependencies` and import it only from tests. It depends on
+`flutter_test`, and a package imported from `lib/` is compiled into release
+builds. Windows refuse to open outside `flutter test`. Leave the
+`depend_on_referenced_packages` lint on (`flutter_lints` enables it); it
+flags a `lib/` import of a dev dependency:
+
+```yaml
+# analysis_options.yaml
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    depend_on_referenced_packages: true
+```
+
 ## Quick start
 
 Open a window, run one interaction, close the window, assert:
