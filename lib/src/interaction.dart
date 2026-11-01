@@ -118,7 +118,8 @@ class _InteractionMatcher extends Matcher {
 
     final type = rebuilt;
     if (type != null && item.countOf(type) == 0) {
-      problems.add('rebuilt: $type never rebuilt in the window');
+      final absent = typeBudgetProblem(item, type: type, budget: false);
+      problems.add('rebuilt: ${absent ?? '$type never rebuilt in the window'}');
     }
     return problems.isEmpty;
   }

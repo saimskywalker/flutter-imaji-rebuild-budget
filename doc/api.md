@@ -11,6 +11,7 @@ Everything is exported from `package:imaji_rebuild_budget/imaji_rebuild_budget.d
 | `close()` | Stops counting and snapshots scroll offsets and counters. |
 | `countOf(Type)` / `countNamed('_Private')` / `countWhere(test)` | Rebuilds of an exact type, a type by name, or widgets matching a predicate. |
 | `countUnder(Finder, {of})` | Rebuilds of a subtree, optionally of one type inside it. |
+| `presentTypes` | Widget types that had an element in the tree during the window. A type budget for anything else fails. |
 | `mountsOf(Type)`, `mounts`, `rebuilds`, `total` | Raw records. A *mount* is an element built for the first time inside the window; a *rebuild* is an element that already existed building again. |
 | `countsByType()`, `describeBusiest({top, budgets, under})` | Per-type counts and the failure table, for your own `reason:` strings. |
 | `counterDelta(name)`, `scrollDelta(Finder)` | How much a counter or a scroll offset changed between `open` and `close`. |
@@ -70,5 +71,9 @@ expect(window, rebuiltAtMost(0, of: NavigationBar));
 ```
 
 Type matching is exact: a budget for `MyCard` says nothing about a subclass
-`MyFancyCard`. Every matcher takes `top:` (default 10) for the length of the
+`MyFancyCard`. A type budget whose type never appeared in the window fails
+instead of passing, because it could never fail (a renamed widget, or a test
+that imports a same-named widget from another library than the app). Pass
+`allowAbsent: true` to keep one anyway, or use `findsNothing` to assert that
+a widget is not there. Every matcher takes `top:` (default 10) for the length of the
 busiest-types table.

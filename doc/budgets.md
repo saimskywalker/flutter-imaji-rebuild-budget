@@ -61,5 +61,7 @@ flutter test --dart-define=UPDATE_REBUILD_BUDGETS=true test/feed_test.dart
 Commit the file. From then on, a budget increase is a one-line diff a reviewer
 sees. A missing file, key or type fails with the command to record it, and a
 budget for a type the test no longer tracks fails too, so the file always
-matches the test. Keep one baseline file per test file (test files run in
+matches the test. A tracked type that never appeared in the window fails as
+well, in update mode too, so a renamed widget cannot leave a budget behind
+that always passes; pass `allowAbsent: true` if one may be missing. Keep one baseline file per test file (test files run in
 parallel), and never enable update mode in CI.

@@ -1,5 +1,39 @@
 # Changelog
 
+## Unreleased
+
+### Behaviour changes
+
+Type budgets no longer pass vacuously. Tests that passed only because their
+widget type was never built now fail
+([#22](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/22)).
+
+- `rebuiltAtMost(of:/named:)`, `mountedAtMost(of:)`,
+  `subtreeRebuiltAtMost(of:)` and every type tracked by
+  `matchesRebuildBaseline` fail when no element of that type existed while
+  the window was open, naming the type and the window. That is usually a
+  renamed or replaced widget, or a test that imports a same-named widget
+  from a different library than the app (`package:flutter/material.dart`
+  versus `package:material_ui/material_ui.dart`); the message says so when a
+  same-named type was present. Pass `allowAbsent: true` to keep the old
+  behaviour for one budget, or assert `findsNothing` for a widget that must
+  never appear.
+- `rebuiltAtMost(named:)` and a `named:` entry in `matchesRebuildBaseline`
+  fail when two different types with that name rebuilt, instead of adding
+  their counts together.
+- `matchesRebuildBaseline` counts `types:` entries by exact type rather than
+  by name, rejects two tracked entries with the same name, and does not write
+  a baseline in update mode while one of its types is absent.
+- `interactionHappened(rebuilt:)` says when the type was never there at all.
+
+### Added
+
+- `allowAbsent` on `rebuiltAtMost`, `mountedAtMost`, `subtreeRebuiltAtMost`
+  and `matchesRebuildBaseline`.
+- `RebuildCounter.presentTypes`: the widget types that had an element in the
+  tree during the window, collected by the walks that already run at `open()`
+  and `close()`.
+
 ## 0.1.1
 
 Documentation only; no API or behaviour change.
