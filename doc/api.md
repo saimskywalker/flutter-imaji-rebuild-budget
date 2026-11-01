@@ -1,6 +1,8 @@
 # API
 
-Everything is exported from `package:imaji_rebuild_budget/imaji_rebuild_budget.dart`.
+Everything is exported from `package:imaji_rebuild_budget/imaji_rebuild_budget.dart`,
+except the [guard](#guard-keeping-the-package-out-of-the-app), which has a
+library of its own.
 
 ## `RebuildCounter`, the counting window
 
@@ -77,3 +79,41 @@ that imports a same-named widget from another library than the app). Pass
 `allowAbsent: true` to keep one anyway, or use `findsNothing` to assert that
 a widget is not there. Every matcher takes `top:` (default 10) for the length of the
 busiest-types table.
+
+## Guard: keeping the package out of the app
+
+`package:imaji_rebuild_budget/guard.dart` exports one function for the app's
+own suite:
+
+```dart
+// test/rebuild_budget_guard_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:imaji_rebuild_budget/guard.dart';
+
+void main() =>
+    test('rebuild budgets stay out of the app', expectRebuildBudgetIsTestOnly);
+```
+
+| Member | What it does |
+|---|---|
+| `expectRebuildBudgetIsTestOnly({packageRoot})` | Fails the test if the app's `pubspec.yaml` lists `imaji_rebuild_budget` under `dependencies`, or a `.dart` file under `lib/` imports or exports `package:imaji_rebuild_budget/...`. The failure names the file and line of each finding. The app is the nearest directory above the test file with a `pubspec.yaml`; `packageRoot` checks another one. |
+| `dart run imaji_rebuild_budget:check [dir]` | The same check as a command, without `flutter test`. Exits 0 when clean, 1 with the findings on stderr, 2 on a usage error. Without `dir` it checks the package around the working directory. |
+
+```text
+imaji_rebuild_budget must stay out of the app in /work/shop: it depends on
+flutter_test, and every dependency and every import from lib/ is compiled into
+release builds.
+  pubspec.yaml:14: imaji_rebuild_budget is under dependencies, so it is built into the app. Move it to dev_dependencies.
+  lib/debug_menu.dart:3: imports package:imaji_rebuild_budget/imaji_rebuild_budget.dart. Import it only from test/ or integration_test/.
+```
+
+Not findings: the package under `dev_dependencies` (from pub.dev, a path or
+git) or `dependency_overrides`; imports from `test/`, `integration_test/`,
+`tool/` or anywhere else outside `lib/`; and the package's name in comments,
+strings or other packages' names (`package:imaji_rebuild_budget_example/`).
+A pubspec without `dev_dependencies` is fine. In a pub workspace
+(`resolution: workspace`) each member is checked on its own, so add the test
+to each package that depends on `imaji_rebuild_budget`. The pubspec is read
+by a small reader of top-level keys, not `package:yaml`, so the guard adds no
+dependency. It needs a file system: under `flutter test --platform chrome` it
+throws `UnsupportedError`.

@@ -39,6 +39,17 @@ widget type was never built now fail
 - `RebuildCounter.presentTypes`: the widget types that had an element in the
   tree during the window, collected by the walks that already run at `open()`
   and `close()`.
+- `package:imaji_rebuild_budget/guard.dart` with
+  `expectRebuildBudgetIsTestOnly`, a test for the app's own suite. It fails
+  when the app lists this package under `dependencies` or imports or exports
+  it from `lib/`, naming the file and line of each finding.
+  `dev_dependencies` (pub.dev, path or git), `dependency_overrides`,
+  workspace members, comments and imports from `test/` or `integration_test/`
+  are fine. The pubspec is read without `package:yaml`, so there is no new
+  dependency
+  ([#27](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/27)).
+- `dart run imaji_rebuild_budget:check [dir]`: the same check as a command,
+  for a CI step that runs before `flutter test`.
 
 ## 0.1.1
 

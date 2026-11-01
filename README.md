@@ -40,6 +40,22 @@ linter:
     depend_on_referenced_packages: true
 ```
 
+The lint stays quiet once the package is moved to `dependencies`, so add one
+test to the app's suite as well. It fails, naming the file and line, if the
+package is listed under `dependencies` or imported from `lib/`:
+
+```dart
+// test/rebuild_budget_guard_test.dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:imaji_rebuild_budget/guard.dart';
+
+void main() =>
+    test('rebuild budgets stay out of the app', expectRebuildBudgetIsTestOnly);
+```
+
+`dart run imaji_rebuild_budget:check` runs the same check without
+`flutter test`, for an early CI step.
+
 ## Quick start
 
 Open a window, run one interaction, close the window, assert:
