@@ -37,8 +37,8 @@ jobs:
       # would be formatted at the package's language version, not its own.
       - name: Check formatting
         if: matrix.flutter == '3.47.7'
-        run: dart format --output=none --set-exit-if-changed lib test
-      - run: flutter analyze lib test
+        run: dart format --output=none --set-exit-if-changed bin lib test
+      - run: flutter analyze bin lib test
       - run: flutter test
 
   example:

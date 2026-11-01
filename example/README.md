@@ -37,6 +37,10 @@ testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone',
 });
 ```
 
+[`test/rebuild_budget_guard_test.dart`](test/rebuild_budget_guard_test.dart)
+is the guard every app should copy: it fails if `imaji_rebuild_budget` is
+listed under `dependencies` or imported from `lib/`.
+
 The state libraries are dependencies of this example only;
 `imaji_rebuild_budget` itself depends on nothing but Flutter.
 

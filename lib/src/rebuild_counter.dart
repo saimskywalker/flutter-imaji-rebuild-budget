@@ -114,7 +114,8 @@ class RebuildCounter {
   /// includes `LiveTestWidgetsFlutterBinding` and `integration_test`'s
   /// binding, but not the binding of a running app, so a window cannot be
   /// opened from app code such as a debug menu. This package belongs in
-  /// `dev_dependencies` and must not be imported from `lib/`.
+  /// `dev_dependencies` and must not be imported from `lib/`;
+  /// `expectRebuildBudgetIsTestOnly` in `guard.dart` checks both.
   static RebuildCounter open({
     String? label,
     num Function()? fetchCount,

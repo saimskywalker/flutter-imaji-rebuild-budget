@@ -30,6 +30,17 @@ app. Keep it in `dev_dependencies`, and use DevTools to look at rebuilds in a
 running app. `LiveTestWidgetsFlutterBinding` and `integration_test`'s binding
 are test bindings too, so windows open there.
 
+**How do I prove it never ships in the app?**
+Add the guard test from the README's Install section to the app's suite:
+`expectRebuildBudgetIsTestOnly` from `package:imaji_rebuild_budget/guard.dart`.
+It fails if `pubspec.yaml` lists the package under `dependencies` or a file in
+`lib/` imports it, naming the file and line. Only `lib/` and the app's
+dependencies are compiled into a release build, so a passing guard means none
+of this package, and none of `flutter_test`, is in it.
+`dart run imaji_rebuild_budget:check` does the same in CI before
+`flutter test`. See [the API](api.md#guard-keeping-the-package-out-of-the-app)
+for what counts.
+
 **Is this a performance test?**
 No, and that is the point. It counts *work*, not milliseconds, so it is
 deterministic: the same code gives the same count on a laptop and on a
