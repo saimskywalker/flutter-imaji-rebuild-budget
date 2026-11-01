@@ -6,7 +6,7 @@ Everything is exported from `package:imaji_rebuild_budget/imaji_rebuild_budget.d
 
 | Member | What it does |
 |---|---|
-| `RebuildCounter.open({label, fetchCount, counters})` | Starts counting. Call it after the widget is pumped, right before the interaction. |
+| `RebuildCounter.open({label, fetchCount, counters})` | Starts counting. Call it after the widget is pumped, right before the interaction. Throws a `StateError` outside `flutter test` (no `TestWidgetsFlutterBinding`). |
 | `RebuildCounter.record(() async { ... }, {...})` | Opens, runs the interaction, closes, even when it throws. |
 | `close()` | Stops counting and snapshots scroll offsets and counters. |
 | `countOf(Type)` / `countNamed('_Private')` / `countWhere(test)` | Rebuilds of an exact type, a type by name, or widgets matching a predicate. |
