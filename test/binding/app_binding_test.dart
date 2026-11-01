@@ -15,7 +15,7 @@ void main() {
 
   test('open refuses to run and leaves the hook alone', () {
     expect(
-      RebuildCounter.open,
+      RebuildWindow.open,
       throwsA(
         isA<StateError>().having(
           (e) => e.message,
@@ -36,7 +36,7 @@ void main() {
   test('record refuses before the interaction runs', () async {
     var ran = false;
     await expectLater(
-      RebuildCounter.record(() async => ran = true),
+      RebuildWindow.record(() async => ran = true),
       throwsStateError,
     );
     expect(ran, isFalse);

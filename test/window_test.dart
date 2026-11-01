@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rebuildcop/rebuildcop.dart';
-import 'package:rebuildcop/src/rebuild_counter.dart' show closeLeftOpenWindow;
+import 'package:rebuildcop/src/tally/rebuild_window.dart'
+    show closeAbandonedWindow;
 
 import 'support/fixtures.dart';
 
@@ -11,9 +12,9 @@ void main() {
   group('counting', () {
     testWidgets('counts rebuilds of widgets that already existed',
         (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -30,11 +31,11 @@ void main() {
 
     testWidgets('ignores everything before open and after close',
         (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
       screen.bump();
       await tester.pump();
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       window.close();
       screen.bump();
       await tester.pump();
@@ -43,9 +44,9 @@ void main() {
     });
 
     testWidgets('counts every frame in the window', (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       for (var i = 0; i < 3; i++) {
         screen.bump();
         await tester.pump();
@@ -59,7 +60,7 @@ void main() {
     testWidgets('tells mounts apart from rebuilds', (tester) async {
       await pumpList(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await tester.drag(find.byType(ListView), const Offset(0, -500));
       await tester.pump();
       window.close();
@@ -74,7 +75,7 @@ void main() {
         'a widget mounted inside the window then rebuilt counts once '
         'as each', (tester) async {
       await tester.pumpWidget(const SizedBox());
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await tester.pumpWidget(
         const Directionality(
           textDirection: TextDirection.ltr,
@@ -90,9 +91,9 @@ void main() {
     });
 
     testWidgets('matches by name and by predicate', (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -103,9 +104,9 @@ void main() {
     });
 
     testWidgets('counts a subtree by finder', (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -121,9 +122,9 @@ void main() {
 
     testWidgets('groups counts by type, busiest first, ties by name',
         (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -137,9 +138,9 @@ void main() {
     });
 
     testWidgets('records the ancestry of each rebuild', (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -159,7 +160,7 @@ void main() {
 
   group('the window', () {
     testWidgets('cannot be closed twice', (tester) async {
-      final window = RebuildCounter.open(label: 'twice');
+      final window = RebuildWindow.open(label: 'twice');
       window.close();
       expect(
         window.close,
@@ -172,18 +173,18 @@ void main() {
     });
 
     testWidgets('describes itself', (tester) async {
-      final window = RebuildCounter.open(label: 'tap');
-      expect('$window', 'RebuildCounter("tap", open, 0 rebuilds, 0 mounts)');
+      final window = RebuildWindow.open(label: 'tap');
+      expect('$window', 'RebuildWindow("tap", open, 0 rebuilds, 0 mounts)');
       window.close();
       expect(
-        '${RebuildCounter.open()..close()}',
-        'RebuildCounter(closed, 0 rebuilds, 0 mounts)',
+        '${RebuildWindow.open()..close()}',
+        'RebuildWindow(closed, 0 rebuilds, 0 mounts)',
       );
     });
 
     testWidgets('releases the hook when it closes', (tester) async {
       expect(debugOnRebuildDirtyWidget, isNull);
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       expect(debugOnRebuildDirtyWidget, isNotNull);
       window.close();
       expect(debugOnRebuildDirtyWidget, isNull);
@@ -197,10 +198,10 @@ void main() {
       final RebuildDirtyWidgetCallback previous = record;
       debugOnRebuildDirtyWidget = previous;
       addTearDown(() => debugOnRebuildDirtyWidget = null);
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
       seen.clear();
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -211,12 +212,12 @@ void main() {
     });
 
     testWidgets('windows overlap and close in any order', (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final outer = RebuildCounter.open(label: 'outer');
+      final outer = RebuildWindow.open(label: 'outer');
       screen.bump();
       await tester.pump();
-      final inner = RebuildCounter.open(label: 'inner');
+      final inner = RebuildWindow.open(label: 'inner');
       screen.bump();
       await tester.pump();
       outer.close();
@@ -235,7 +236,7 @@ void main() {
       final RebuildDirtyWidgetCallback other = ignore;
       addTearDown(() => debugOnRebuildDirtyWidget = null);
 
-      final window = RebuildCounter.open(label: 'hijacked');
+      final window = RebuildWindow.open(label: 'hijacked');
       debugOnRebuildDirtyWidget = other;
 
       expect(
@@ -253,9 +254,9 @@ void main() {
 
     testWidgets('a window left open is closed and reported at test end',
         (tester) async {
-      final window = RebuildCounter.open(label: 'forgotten');
+      final window = RebuildWindow.open(label: 'forgotten');
 
-      final message = closeLeftOpenWindow(window);
+      final message = closeAbandonedWindow(window);
 
       expect(
           message,
@@ -263,14 +264,14 @@ void main() {
               'closed'));
       expect(window.isOpen, isFalse);
       expect(debugOnRebuildDirtyWidget, isNull);
-      expect(closeLeftOpenWindow(window), isNull);
+      expect(closeAbandonedWindow(window), isNull);
     });
 
     testWidgets('record() closes the window after the interaction',
         (tester) async {
-      final screen = await pumpScreen(tester);
+      final screen = await showScreen(tester);
 
-      final window = await RebuildCounter.record(() async {
+      final window = await RebuildWindow.record(() async {
         screen.bump();
         await tester.pump();
       });
@@ -282,7 +283,7 @@ void main() {
     testWidgets('record() closes the window when the interaction throws',
         (tester) async {
       await expectLater(
-        RebuildCounter.record(() async => throw StateError('boom')),
+        RebuildWindow.record(() async => throw StateError('boom')),
         throwsA(isA<StateError>().having((e) => e.message, 'message', 'boom')),
       );
       expect(debugOnRebuildDirtyWidget, isNull);
@@ -295,7 +296,7 @@ void main() {
       var fetches = 3;
       var ticks = 10;
 
-      final window = RebuildCounter.open(
+      final window = RebuildWindow.open(
         fetchCount: () => fetches,
         counters: {'ticks': () => ticks},
       );
@@ -310,20 +311,20 @@ void main() {
     });
 
     testWidgets('cannot be read while the window is open', (tester) async {
-      final window = RebuildCounter.open(fetchCount: () => 0);
+      final window = RebuildWindow.open(fetchCount: () => 0);
       expect(() => window.counterDelta('fetchCount'), throwsStateError);
       window.close();
     });
 
     testWidgets('must exist to be read', (tester) async {
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       window.close();
       expect(() => window.counterDelta('nope'), throwsArgumentError);
     });
 
     test('fetchCount cannot also be passed as a named counter', () {
       expect(
-        () => RebuildCounter.open(
+        () => RebuildWindow.open(
           fetchCount: () => 0,
           counters: {'fetchCount': () => 0},
         ),
@@ -336,7 +337,7 @@ void main() {
     testWidgets('are snapshotted at both ends of the window', (tester) async {
       await pumpList(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await tester.drag(find.byType(ListView), const Offset(0, -300));
       await tester.pump();
       window.close();
@@ -351,7 +352,7 @@ void main() {
     testWidgets('resolve from a widget inside the scrollable', (tester) async {
       await pumpList(tester);
 
-      final window = RebuildCounter.open();
+      final window = RebuildWindow.open();
       await tester.drag(find.byType(ListView), const Offset(0, -100));
       await tester.pump();
       window.close();
@@ -361,8 +362,8 @@ void main() {
     });
 
     testWidgets('are null when nothing scrollable is found', (tester) async {
-      final screen = await pumpScreen(tester);
-      final window = RebuildCounter.open();
+      final screen = await showScreen(tester);
+      final window = RebuildWindow.open();
       screen.bump();
       await tester.pump();
       window.close();
@@ -373,13 +374,13 @@ void main() {
 
   group('print mode', () {
     testWidgets('prints per-type counts when a window closes', (tester) async {
-      final screen = await pumpScreen(tester);
-      RebuildCounter.printCounts = true;
-      addTearDown(() => RebuildCounter.printCounts = false);
+      final screen = await showScreen(tester);
+      RebuildWindow.printCounts = true;
+      addTearDown(() => RebuildWindow.printCounts = false);
 
       var fetches = 0;
       final window =
-          RebuildCounter.open(label: 'bump', fetchCount: () => fetches);
+          RebuildWindow.open(label: 'bump', fetchCount: () => fetches);
       screen.bump();
       fetches++;
       await tester.pump();
@@ -392,15 +393,15 @@ void main() {
       );
 
       expect(printed, hasLength(1));
-      expect(printed.single, startsWith('[rebuild counts] window "bump": '));
+      expect(printed.single, startsWith('[rebuildcop] window "bump": '));
       expect(printed.single, contains('2  CountLabel'));
       expect(printed.single, contains('counter fetchCount changed by 1'));
     });
 
-    test('is off unless REBUILD_COUNTS is defined', () {
+    test('is off unless PRINT_REBUILDS is defined', () {
       expect(
-        RebuildCounter.printCounts,
-        const bool.fromEnvironment('REBUILD_COUNTS'),
+        RebuildWindow.printCounts,
+        const bool.fromEnvironment('PRINT_REBUILDS'),
       );
     });
   });

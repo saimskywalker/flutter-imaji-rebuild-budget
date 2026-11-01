@@ -8,8 +8,8 @@ Widget _host(Widget child) =>
     Directionality(textDirection: TextDirection.ltr, child: child);
 
 /// Lets the clock tick three times, one frame per tick.
-Future<RebuildCounter> _threeTicks(WidgetTester tester) async {
-  final window = RebuildCounter.open(label: 'three clock ticks');
+Future<RebuildWindow> _threeTicks(WidgetTester tester) async {
+  final window = RebuildWindow.open(label: 'three clock ticks');
   for (var i = 0; i < 3; i++) {
     await tester.pump(const Duration(seconds: 1));
   }
@@ -43,16 +43,16 @@ void main() {
       expect(window, interactionHappened(rebuilt: ClockText));
       expect(window, rebuiltAtMost(0, of: ProductTile));
       expect(window, rebuiltAtMost(0, of: ProductList));
-      // Measured with --dart-define=REBUILD_COUNTS=true: per tick, the
+      // Measured with --dart-define=PRINT_REBUILDS=true: per tick, the
       // clock, its ClockText and that label's Text.
       expect(window, subtreeRebuiltAtMost(9, under: find.byType(LiveClock)));
     });
   });
 
   group('re-sorting a keyed list', () {
-    Future<RebuildCounter> reverse(WidgetTester tester, bool stable) async {
+    Future<RebuildWindow> reverse(WidgetTester tester, bool stable) async {
       await tester.pumpWidget(_host(SortableResults(stableKeys: stable)));
-      final window = RebuildCounter.open(label: 'reverse the results');
+      final window = RebuildWindow.open(label: 'reverse the results');
       tester
           .state<SortableResultsState>(find.byType(SortableResults))
           .reverse();

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rebuildcop/rebuildcop.dart';
-import 'package:rebuildcop/src/baseline_store.dart';
+import 'package:rebuildcop/src/verdict/baseline/baseline_file.dart';
 
 import 'support/fixtures.dart';
 import 'support/tile_a.dart' as a;
@@ -19,12 +19,12 @@ void main() {
   });
   tearDown(() {
     dir.deleteSync(recursive: true);
-    RebuildCounter.updateBaselines = false;
+    RebuildWindow.updateBaselines = false;
   });
 
-  Future<RebuildCounter> bumpOnce(WidgetTester tester) async {
-    final screen = await pumpScreen(tester);
-    final window = RebuildCounter.open();
+  Future<RebuildWindow> bumpOnce(WidgetTester tester) async {
+    final screen = await showScreen(tester);
+    final window = RebuildWindow.open();
     screen.bump();
     await tester.pump();
     window.close();
@@ -46,7 +46,7 @@ void main() {
       'zzz other test': {'Footer': 0},
     });
 
-    RebuildCounter.updateBaselines = true;
+    RebuildWindow.updateBaselines = true;
     expect(window, baseline());
 
     expect(
@@ -68,7 +68,7 @@ void main() {
     final window = await bumpOnce(tester);
     path = '${dir.path}/nested/deeper/budgets.json';
 
-    RebuildCounter.updateBaselines = true;
+    RebuildWindow.updateBaselines = true;
     expect(window, baseline());
 
     expect(File(path).existsSync(), isTrue);
@@ -176,7 +176,7 @@ void main() {
       (tester) async {
     final window = await bumpOnce(tester);
 
-    RebuildCounter.updateBaselines = true;
+    RebuildWindow.updateBaselines = true;
     final message = mismatchOf(
       matchesRebuildBaseline(path, key: 'bump', types: [ListRow]),
       window,
@@ -251,19 +251,19 @@ void main() {
   });
 
   test('a relative path resolves next to the test file, like a golden', () {
-    final resolved = resolveBaselinePath('rebuild_budgets/home.json');
+    final resolved = locateBaselineFile('rebuild_budgets/home.json');
     final testDir = (goldenFileComparator as LocalFileComparator).basedir;
     expect(resolved, testDir.resolve('rebuild_budgets/home.json').toFilePath());
     expect(resolved, endsWith('test/rebuild_budgets/home.json'));
   });
 
   test('an absolute path is used as is', () {
-    expect(resolveBaselinePath(path), path);
+    expect(locateBaselineFile(path), path);
   });
 
   test('update mode is off unless UPDATE_REBUILD_BUDGETS is defined', () {
     expect(
-      RebuildCounter.updateBaselines,
+      RebuildWindow.updateBaselines,
       const bool.fromEnvironment('UPDATE_REBUILD_BUDGETS'),
     );
   });

@@ -58,10 +58,11 @@ void main() =>
 
 ### Coming from imaji_rebuild_budget
 
-This package was renamed from `imaji_rebuild_budget`; the API is the same.
-Replace the dev dependency with `rebuildcop`, change
-`package:imaji_rebuild_budget/` imports to `package:rebuildcop/`, and run
-`dart run rebuildcop:check`. See the
+This package was renamed from `imaji_rebuild_budget`. Replace the dev
+dependency with `rebuildcop`, change `package:imaji_rebuild_budget/` imports
+to `package:rebuildcop/`, and run `dart run rebuildcop:check`. Since 0.3.0
+the window class is `RebuildWindow` and print mode is `PRINT_REBUILDS`. See
+the
 [CHANGELOG](https://github.com/saimskywalker/rebuildcop/blob/main/CHANGELOG.md).
 
 ## Quick start
@@ -76,7 +77,7 @@ void main() {
   testWidgets('scrolling the feed never rebuilds the tab bar', (tester) async {
     await tester.pumpWidget(const MyApp());
 
-    final window = RebuildCounter.open(label: 'scroll the feed');
+    final window = RebuildWindow.open(label: 'scroll the feed');
     await tester.drag(find.byType(ListView), const Offset(0, -600));
     await tester.pumpAndSettle();
     window.close();
@@ -88,7 +89,7 @@ void main() {
 ```
 
 Run `flutter test`. To pick a budget, measure first: run with
-`--dart-define=REBUILD_COUNTS=true` and every window prints its per-type
+`--dart-define=PRINT_REBUILDS=true` and every window prints its per-type
 counts.
 
 ## Example output
@@ -98,7 +99,7 @@ product list once a second. Three ticks, budget zero:
 
 ```text
 Expected: ProductTile rebuilt at most 0 times in the window
-  Actual: RebuildCounter:<RebuildCounter("three clock ticks", closed, 42 rebuilds, 0 mounts)>
+  Actual: RebuildWindow:<RebuildWindow("three clock ticks", closed, 42 rebuilds, 0 mounts)>
    Which: rebuilt 15 times, 15 over budget.
           42 rebuilds across 5 widget types, busiest first:
             18  Text
@@ -132,7 +133,7 @@ counted, a framework limitation; budget the widget that builds them.
 
 ## Documentation
 
-- [API: `RebuildCounter` and every matcher](https://github.com/saimskywalker/rebuildcop/blob/main/doc/api.md)
+- [API: `RebuildWindow` and every matcher](https://github.com/saimskywalker/rebuildcop/blob/main/doc/api.md)
 - [Measuring budgets (print mode) and baseline files](https://github.com/saimskywalker/rebuildcop/blob/main/doc/budgets.md)
 - [Examples: setState, keys, Riverpod, Provider, Bloc](https://github.com/saimskywalker/rebuildcop/blob/main/doc/examples.md)
 - [FAQ, known gaps, supported versions and comparison](https://github.com/saimskywalker/rebuildcop/blob/main/doc/faq.md)

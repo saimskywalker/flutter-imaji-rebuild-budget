@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.3.0
+
+Internals rewritten; the window class is now `RebuildWindow` and print mode
+is `--dart-define=PRINT_REBUILDS=true`. The rebuild tracking core
+(the window, the matchers, the failure tables and baseline files) was
+written again from scratch. The guard (`package:rebuildcop/guard.dart` and
+`dart run rebuildcop:check`) is unchanged.
+
+### Breaking changes
+
+- The counting window class is renamed to `RebuildWindow`. Its members are
+  the same: `RebuildWindow.open`, `RebuildWindow.record`, `close()`,
+  `countOf`, `countNamed`, `countWhere`, `countUnder`, `mountsOf`,
+  `presentTypes`, `countsByType`, `describeBusiest`, `counterDelta`,
+  `scrollDelta`, `RebuildWindow.printCounts` and
+  `RebuildWindow.updateBaselines`. There is no alias for the old name:
+  replace it with `RebuildWindow` in tests, including return types such as
+  `Future<RebuildWindow>` in test helpers.
+- Print mode is turned on with `--dart-define=PRINT_REBUILDS=true`; the
+  0.2.0 define is no longer read. Printed lines start with `[rebuildcop]`.
+- The entries of `rebuilds` and `mounts` are `BuildRecord`s, and their
+  `ancestors` are `AncestorSnapshot`s, both exported. Code that only read
+  their fields (`widget`, `widgetType`, `typeName`, `isMount`, `ancestors`)
+  needs no change.
+- A matcher given something other than a window says
+  `is not a RebuildWindow`.
+
+### Unchanged
+
+- Every matcher (`rebuiltAtMost`, `mountedAtMost`, `subtreeRebuiltAtMost`,
+  `interactionHappened`, `matchesRebuildBaseline`) and `allowAbsent`, with
+  the failure messages shown in the README and FAQ.
+- Baseline files: the same JSON format (one object per key, one whole-number
+  budget per type name, keys sorted, two-space indent) and the same paths,
+  so files written by 0.2.0 and 0.1.x are read as they are.
+- `UPDATE_REBUILD_BUDGETS`, `expectRebuildBudgetIsTestOnly` and
+  `dart run rebuildcop:check`.
+
 ## 0.2.0
 
 Renamed from `imaji_rebuild_budget`. The API is the same; only the package
@@ -42,7 +80,7 @@ widget type was never built now fail
   by name, rejects two tracked entries with the same name, and does not write
   a baseline in update mode while one of its types is absent.
 - `interactionHappened(rebuilt:)` says when the type was never there at all.
-- `RebuildCounter.open` and `RebuildCounter.record` throw a `StateError`
+- Opening a window (`open` and `record`) throws a `StateError`
   unless the widgets binding is a `TestWidgetsFlutterBinding`, so a window
   can no longer be opened in a debug run of the app, for example from a
   debug menu. `LiveTestWidgetsFlutterBinding` and `integration_test` are
@@ -53,7 +91,7 @@ widget type was never built now fail
 
 - `allowAbsent` on `rebuiltAtMost`, `mountedAtMost`, `subtreeRebuiltAtMost`
   and `matchesRebuildBaseline`.
-- `RebuildCounter.presentTypes`: the widget types that had an element in the
+- `presentTypes` on the window: the widget types that had an element in the
   tree during the window, collected by the walks that already run at `open()`
   and `close()`.
 - `package:rebuildcop/guard.dart` with
@@ -88,17 +126,17 @@ Documentation only; no API or behaviour change.
 
 First release.
 
-- `RebuildCounter`: a counting window over Flutter's
+- The counting window over Flutter's
   `debugOnRebuildDirtyWidget` hook. Windows can overlap, keep and restore a
   previously installed hook, report a hook replaced mid-window, and fail a
   test that leaves one open. Mounts and rebuilds are counted apart.
-  `RebuildCounter.record` wraps an interaction in a window.
+  `record` wraps an interaction in a window.
 - Matchers: `rebuiltAtMost` (by type, by name, or total),
   `subtreeRebuiltAtMost` (by finder), `mountedAtMost`.
 - `interactionHappened`: proof that a window's interaction ran (a scroll
   offset moved, a fetch count or named counter changed, a type rebuilt).
 - Failure output lists the busiest widget types with the budget beside each.
-- Print mode (`--dart-define=REBUILD_COUNTS=true`) prints every window's
+- Print mode (a `--dart-define` flag) prints every window's
   per-type counts and every measurement beside its budget.
 - `matchesRebuildBaseline`: golden-style JSON budget files, rewritten with
   `--dart-define=UPDATE_REBUILD_BUDGETS=true`.
