@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget_example/bloc/download.dart';
+import 'package:rebuildcop/rebuildcop.dart';
+import 'package:rebuildcop_example/bloc/download.dart';
 
 Future<RebuildCounter> fiveProgressTicks(
   WidgetTester tester, {

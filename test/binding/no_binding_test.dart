@@ -3,7 +3,7 @@
 // the test binding for the whole isolate.
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 
 void main() {
   test('there is no binding', () {
@@ -18,7 +18,7 @@ void main() {
           (e) => e.message,
           'message',
           allOf(
-            startsWith('imaji_rebuild_budget only runs under flutter test.'),
+            startsWith('rebuildcop only runs under flutter test.'),
             contains('inside testWidgets'),
           ),
         ),

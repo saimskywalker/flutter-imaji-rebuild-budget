@@ -19,7 +19,7 @@ No. `RebuildCounter.open` throws a `StateError` unless the widgets binding is
 a `TestWidgetsFlutterBinding`, the binding `testWidgets` sets up:
 
 ```text
-Bad state: imaji_rebuild_budget only runs under flutter test. It must be a
+Bad state: rebuildcop only runs under flutter test. It must be a
 dev_dependency and must not be imported from lib/. The binding is
 WidgetsFlutterBinding, not a TestWidgetsFlutterBinding.
 ```
@@ -32,12 +32,12 @@ are test bindings too, so windows open there.
 
 **How do I prove it never ships in the app?**
 Add the guard test from the README's Install section to the app's suite:
-`expectRebuildBudgetIsTestOnly` from `package:imaji_rebuild_budget/guard.dart`.
+`expectRebuildBudgetIsTestOnly` from `package:rebuildcop/guard.dart`.
 It fails if `pubspec.yaml` lists the package under `dependencies` or a file in
 `lib/` imports it, naming the file and line. Only `lib/` and the app's
 dependencies are compiled into a release build, so a passing guard means none
 of this package, and none of `flutter_test`, is in it.
-`dart run imaji_rebuild_budget:check` does the same in CI before
+`dart run rebuildcop:check` does the same in CI before
 `flutter test`. See [the API](api.md#guard-keeping-the-package-out-of-the-app)
 for what counts.
 
@@ -71,7 +71,7 @@ which is counted. This is a framework limitation tracked upstream in
 [flutter/flutter#71626](https://github.com/flutter/flutter/issues/71626), and
 DevTools' "Track widget rebuilds" shares it because it uses the same hook.
 Counting these updates separately is planned in
-[#10](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/10).
+[#10](https://github.com/saimskywalker/rebuildcop/issues/10).
 
 **My budget passes but the widget was renamed / moved to `material_ui`.**
 Since the next release it fails instead. A budget for a type with no element
@@ -123,14 +123,14 @@ The counters and matchers do. Baseline files need a file system, so
 
 **Which Flutter versions?**
 The package: Flutter 3.27 (Dart 3.6) and newer. CI runs its suite on 3.27.4
-and 3.47.7. The [`example/`](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/tree/main/example) app needs Flutter 3.32 (Dart 3.8) or
+and 3.47.7. The [`example/`](https://github.com/saimskywalker/rebuildcop/tree/main/example) app needs Flutter 3.32 (Dart 3.8) or
 newer, because `flutter_riverpod` 3 does; CI runs it on 3.47.7.
 
 ## Comparison
 
 | | Headless in `flutter test` | Fails a test | No code in `lib/` | Points at the widget |
 |---|---|---|---|---|
-| **imaji_rebuild_budget** | yes | yes | yes | yes, busiest types |
+| **rebuildcop** | yes | yes | yes | yes, busiest types |
 | DevTools "Track widget rebuilds" | no, interactive | no | yes | yes |
 | `debugPrintRebuildDirtyWidgets` | yes | no, a log to read | yes | yes, unaggregated |
 | `integration_test` + `traceAction` / frame timings | no, needs a device | yes, on timings | yes | no |
@@ -142,7 +142,7 @@ By hand in `pubspec.yaml`:
 
 ```yaml
 dev_dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.2.0
 ```
 
 To try unreleased changes from `main` instead of a published version (it can
@@ -150,6 +150,6 @@ change under you):
 
 ```yaml
 dev_dependencies:
-  imaji_rebuild_budget:
-    git: https://github.com/saimskywalker/flutter-imaji-rebuild-budget
+  rebuildcop:
+    git: https://github.com/saimskywalker/rebuildcop
 ```

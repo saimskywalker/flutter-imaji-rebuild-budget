@@ -1,12 +1,29 @@
 # Changelog
 
-## Unreleased
+## 0.2.0
+
+Renamed from `imaji_rebuild_budget`. The API is the same; only the package
+name, its imports and the command change. `imaji_rebuild_budget` 0.1.1 is
+the last release under the old name.
+
+### Migration
+
+- In `pubspec.yaml`, replace `imaji_rebuild_budget` under
+  `dev_dependencies` with `rebuildcop: ^0.2.0`, or run
+  `flutter pub remove imaji_rebuild_budget` and
+  `flutter pub add --dev rebuildcop`.
+- Replace `package:imaji_rebuild_budget/imaji_rebuild_budget.dart` with
+  `package:rebuildcop/rebuildcop.dart`, and
+  `package:imaji_rebuild_budget/guard.dart` with
+  `package:rebuildcop/guard.dart`.
+- Run the command-line check as `dart run rebuildcop:check`.
+- Baseline files are unchanged: same JSON format, same paths.
 
 ### Behaviour changes
 
 Type budgets no longer pass vacuously. Tests that passed only because their
 widget type was never built now fail
-([#22](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/22)).
+([#22](https://github.com/saimskywalker/rebuildcop/issues/22)).
 
 - `rebuiltAtMost(of:/named:)`, `mountedAtMost(of:)`,
   `subtreeRebuiltAtMost(of:)` and every type tracked by
@@ -30,7 +47,7 @@ widget type was never built now fail
   can no longer be opened in a debug run of the app, for example from a
   debug menu. `LiveTestWidgetsFlutterBinding` and `integration_test` are
   still allowed
-  ([#27](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/27)).
+  ([#27](https://github.com/saimskywalker/rebuildcop/issues/27)).
 
 ### Added
 
@@ -39,7 +56,7 @@ widget type was never built now fail
 - `RebuildCounter.presentTypes`: the widget types that had an element in the
   tree during the window, collected by the walks that already run at `open()`
   and `close()`.
-- `package:imaji_rebuild_budget/guard.dart` with
+- `package:rebuildcop/guard.dart` with
   `expectRebuildBudgetIsTestOnly`, a test for the app's own suite. It fails
   when the app lists this package under `dependencies` or imports or exports
   it from `lib/`, naming the file and line of each finding.
@@ -47,16 +64,16 @@ widget type was never built now fail
   workspace members, comments and imports from `test/` or `integration_test/`
   are fine. The pubspec is read without `package:yaml`, so there is no new
   dependency
-  ([#27](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/27)).
-- `dart run imaji_rebuild_budget:check [dir]`: the same check as a command,
+  ([#27](https://github.com/saimskywalker/rebuildcop/issues/27)).
+- `dart run rebuildcop:check [dir]`: the same check as a command,
   for a CI step that runs before `flutter test`.
 
 ## 0.1.1
 
 Documentation only; no API or behaviour change.
 
-- README: install from pub.dev (`flutter pub add --dev imaji_rebuild_budget`)
-  instead of git, with pub.dev version, points and likes badges. The git
+- README: install from pub.dev (`flutter pub add --dev`) instead of git,
+  with pub.dev version, points and likes badges. The git
   install stays as an option for unreleased `main`.
 - README FAQ and dartdoc: render-object widgets (`ColoredBox`, `Padding`,
   `SizedBox`, ...) are mostly not counted. Flutter does not call

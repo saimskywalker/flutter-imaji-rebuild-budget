@@ -371,7 +371,7 @@ class RebuildCounter {
             'sets up the test binding.'
         : 'The binding is $bindingType, not a TestWidgetsFlutterBinding.';
     throw StateError(
-      'imaji_rebuild_budget only runs under flutter test. It must be a '
+      'rebuildcop only runs under flutter test. It must be a '
       'dev_dependency and must not be imported from lib/. $why',
     );
   }
