@@ -3,7 +3,7 @@
 // own because the binding is chosen once per isolate.
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 
 void main() {
   LiveTestWidgetsFlutterBinding.ensureInitialized();

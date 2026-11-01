@@ -1,14 +1,14 @@
-# imaji_rebuild_budget
+# rebuildcop
 
 Turn unnecessary Flutter widget rebuilds into failing `flutter test` runs,
 so a screen that starts rebuilding too much is caught in CI instead of as jank
 on a mid-range phone.
 
-[![pub version](https://img.shields.io/pub/v/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget)
-[![pub points](https://img.shields.io/pub/points/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget/score)
-[![pub likes](https://img.shields.io/pub/likes/imaji_rebuild_budget)](https://pub.dev/packages/imaji_rebuild_budget/score)
-[![CI](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/actions/workflows/ci.yml/badge.svg)](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/actions/workflows/ci.yml)
-[![license: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/LICENSE)
+[![pub version](https://img.shields.io/pub/v/rebuildcop)](https://pub.dev/packages/rebuildcop)
+[![pub points](https://img.shields.io/pub/points/rebuildcop)](https://pub.dev/packages/rebuildcop/score)
+[![pub likes](https://img.shields.io/pub/likes/rebuildcop)](https://pub.dev/packages/rebuildcop/score)
+[![CI](https://github.com/saimskywalker/rebuildcop/actions/workflows/ci.yml/badge.svg)](https://github.com/saimskywalker/rebuildcop/actions/workflows/ci.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/saimskywalker/rebuildcop/blob/main/LICENSE)
 
 ## Why
 
@@ -22,7 +22,7 @@ on a mid-range phone.
 ## Install
 
 ```sh
-flutter pub add --dev imaji_rebuild_budget
+flutter pub add --dev rebuildcop
 ```
 
 Keep it in `dev_dependencies` and import it only from tests. It depends on
@@ -47,14 +47,22 @@ package is listed under `dependencies` or imported from `lib/`:
 ```dart
 // test/rebuild_budget_guard_test.dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/guard.dart';
+import 'package:rebuildcop/guard.dart';
 
 void main() =>
     test('rebuild budgets stay out of the app', expectRebuildBudgetIsTestOnly);
 ```
 
-`dart run imaji_rebuild_budget:check` runs the same check without
+`dart run rebuildcop:check` runs the same check without
 `flutter test`, for an early CI step.
+
+### Coming from imaji_rebuild_budget
+
+This package was renamed from `imaji_rebuild_budget`; the API is the same.
+Replace the dev dependency with `rebuildcop`, change
+`package:imaji_rebuild_budget/` imports to `package:rebuildcop/`, and run
+`dart run rebuildcop:check`. See the
+[CHANGELOG](https://github.com/saimskywalker/rebuildcop/blob/main/CHANGELOG.md).
 
 ## Quick start
 
@@ -62,7 +70,7 @@ Open a window, run one interaction, close the window, assert:
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 
 void main() {
   testWidgets('scrolling the feed never rebuilds the tab bar', (tester) async {
@@ -120,17 +128,17 @@ and took the list with it.
 
 Known gap: render-object widgets (`Padding`, `ColoredBox`, ...) are mostly not
 counted, a framework limitation; budget the widget that builds them.
-[Details in the FAQ](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/doc/faq.md).
+[Details in the FAQ](https://github.com/saimskywalker/rebuildcop/blob/main/doc/faq.md).
 
 ## Documentation
 
-- [API: `RebuildCounter` and every matcher](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/doc/api.md)
-- [Measuring budgets (print mode) and baseline files](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/doc/budgets.md)
-- [Examples: setState, keys, Riverpod, Provider, Bloc](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/doc/examples.md)
-- [FAQ, known gaps, supported versions and comparison](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/doc/faq.md)
-- [pub.dev page](https://pub.dev/packages/imaji_rebuild_budget) and [API docs](https://pub.dev/documentation/imaji_rebuild_budget/latest/)
-- [CHANGELOG](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/CHANGELOG.md), [issues](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues) and [CONTRIBUTING](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/CONTRIBUTING.md)
+- [API: `RebuildCounter` and every matcher](https://github.com/saimskywalker/rebuildcop/blob/main/doc/api.md)
+- [Measuring budgets (print mode) and baseline files](https://github.com/saimskywalker/rebuildcop/blob/main/doc/budgets.md)
+- [Examples: setState, keys, Riverpod, Provider, Bloc](https://github.com/saimskywalker/rebuildcop/blob/main/doc/examples.md)
+- [FAQ, known gaps, supported versions and comparison](https://github.com/saimskywalker/rebuildcop/blob/main/doc/faq.md)
+- [pub.dev page](https://pub.dev/packages/rebuildcop) and [API docs](https://pub.dev/documentation/rebuildcop/latest/)
+- [CHANGELOG](https://github.com/saimskywalker/rebuildcop/blob/main/CHANGELOG.md), [issues](https://github.com/saimskywalker/rebuildcop/issues) and [CONTRIBUTING](https://github.com/saimskywalker/rebuildcop/blob/main/CONTRIBUTING.md)
 
 ## License
 
-MIT © saimskywalker. See [LICENSE](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/blob/main/LICENSE).
+MIT © saimskywalker. See [LICENSE](https://github.com/saimskywalker/rebuildcop/blob/main/LICENSE).

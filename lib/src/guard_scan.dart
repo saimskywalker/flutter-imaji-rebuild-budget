@@ -1,5 +1,5 @@
 /// The checks behind `expectRebuildBudgetIsTestOnly` and
-/// `dart run imaji_rebuild_budget:check`, on file contents only.
+/// `dart run rebuildcop:check`, on file contents only.
 ///
 /// Nothing here touches the file system or Flutter, so the command-line
 /// check can run on the plain Dart VM. The pubspec is read by a small reader
@@ -8,7 +8,7 @@
 library;
 
 /// The name this package is listed under and imported as.
-const String guardedPackage = 'imaji_rebuild_budget';
+const String guardedPackage = 'rebuildcop';
 
 /// One place where the app depends on or imports this package.
 class GuardFinding {
@@ -56,7 +56,7 @@ List<GuardFinding> checkPubspec(String pubspec) {
   ];
 }
 
-/// Finds every `import` or `export` of `package:imaji_rebuild_budget/` in
+/// Finds every `import` or `export` of `package:rebuildcop/` in
 /// the Dart [source] of [file].
 ///
 /// Comments and string literals outside directives are skipped, so a doc

@@ -24,7 +24,7 @@ const Map<String, String> cleanApp = {
   'pubspec.yaml': '''
 name: shop
 description: >-
-  A shop whose rebuilds are budgeted with imaji_rebuild_budget.
+  A shop whose rebuilds are budgeted with rebuildcop.
 publish_to: none
 
 environment:
@@ -33,45 +33,43 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # imaji_rebuild_budget: ^0.1.0   (moved to dev_dependencies)
+  # rebuildcop: ^0.1.0   (moved to dev_dependencies)
   shop_core:
     git:
-      url: https://example.com/imaji_rebuild_budget-fork.git
-      path: imaji_rebuild_budget
+      url: https://example.com/rebuildcop-fork.git
+      path: rebuildcop
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 
 dependency_overrides:
-  imaji_rebuild_budget:
-    path: ../imaji_rebuild_budget
+  rebuildcop:
+    path: ../rebuildcop
 ''',
   'lib/main.dart': r'''
-/// Budgeted in test/ with imaji_rebuild_budget:
+/// Budgeted in test/ with rebuildcop:
 ///
 /// ```dart
-/// import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+/// import 'package:rebuildcop/rebuildcop.dart';
 /// ```
 library;
 
-// import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-/* export 'package:imaji_rebuild_budget/guard.dart'; /* nested */ */
-import 'package:shop/imaji_rebuild_budget_notes.dart';
-export 'package:imaji_rebuild_budget_example/main.dart';
+// import 'package:rebuildcop/rebuildcop.dart';
+/* export 'package:rebuildcop/guard.dart'; /* nested */ */
+import 'package:shop/rebuildcop_notes.dart';
+export 'package:rebuildcop_example/main.dart';
 
-const hint = "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';";
-const raw = r'export "package:imaji_rebuild_budget/guard.dart";';
+const hint = "import 'package:rebuildcop/rebuildcop.dart';";
+const raw = r'export "package:rebuildcop/guard.dart";';
 final multi = """
-${notes.isEmpty ? 'import' : "export"} 'package:imaji_rebuild_budget/guard.dart';
+${notes.isEmpty ? 'import' : "export"} 'package:rebuildcop/guard.dart';
 """;
 ''',
-  'lib/imaji_rebuild_budget_notes.dart': "const notes = 'none';\n",
-  'test/widget_test.dart':
-      "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';\n",
+  'lib/rebuildcop_notes.dart': "const notes = 'none';\n",
+  'test/widget_test.dart': "import 'package:rebuildcop/rebuildcop.dart';\n",
   'integration_test/app_test.dart':
-      "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';\n",
-  'tool/measure.dart':
-      "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';\n",
+      "import 'package:rebuildcop/rebuildcop.dart';\n",
+  'tool/measure.dart': "import 'package:rebuildcop/rebuildcop.dart';\n",
 };

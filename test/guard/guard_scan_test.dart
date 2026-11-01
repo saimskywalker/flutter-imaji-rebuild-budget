@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/src/guard_scan.dart';
+import 'package:rebuildcop/src/guard_scan.dart';
 
 List<String> pubspecFindings(String pubspec) =>
     [for (final finding in checkPubspec(pubspec)) '$finding'];
@@ -17,10 +17,10 @@ name: app
 dependencies:
   flutter:
     sdk: flutter
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 '''),
         [
-          'pubspec.yaml:6: imaji_rebuild_budget is under dependencies, so it '
+          'pubspec.yaml:6: rebuildcop is under dependencies, so it '
               'is built into the app. Move it to dev_dependencies.',
         ],
       );
@@ -31,9 +31,9 @@ dependencies:
       expect(
         checkPubspec('''
 dev_dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 dependencies:
-  imaji_rebuild_budget:
+  rebuildcop:
     path: ../
 ''').map((f) => f.line),
         [4],
@@ -42,14 +42,14 @@ dependencies:
 
     test('finds a quoted key, a flow mapping and CRLF line endings', () {
       expect(
-        checkPubspec('dependencies:\r\n  "imaji_rebuild_budget": any\r\n')
+        checkPubspec('dependencies:\r\n  "rebuildcop": any\r\n')
             .map((f) => f.line),
         [2],
       );
       expect(
         checkPubspec(
           'name: app\n'
-          'dependencies: {flutter: {sdk: flutter}, imaji_rebuild_budget: any}\n',
+          'dependencies: {flutter: {sdk: flutter}, rebuildcop: any}\n',
         ).map((f) => f.line),
         [2],
       );
@@ -64,7 +64,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  imaji_rebuild_budget: $source
+  rebuildcop: $source
 '''),
           isEmpty,
         );
@@ -78,8 +78,8 @@ dependencies:
   flutter:
     sdk: flutter
 dependency_overrides:
-  imaji_rebuild_budget:
-    path: ../imaji_rebuild_budget
+  rebuildcop:
+    path: ../rebuildcop
 '''),
         isEmpty,
       );
@@ -102,7 +102,7 @@ resolution: workspace
 environment:
   sdk: ^3.6.0
 dev_dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 '''),
         isEmpty,
       );
@@ -112,7 +112,7 @@ name: _
 publish_to: none
 workspace:
   - packages/app
-  - packages/imaji_rebuild_budget
+  - packages/rebuildcop
 '''),
         isEmpty,
       );
@@ -121,7 +121,7 @@ workspace:
 name: app
 resolution: workspace
 dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 ''').map((f) => f.line),
         [4],
       );
@@ -131,21 +131,21 @@ dependencies:
       expect(
         pubspecFindings('''
 # dependencies:
-#   imaji_rebuild_budget: ^0.1.0
+#   rebuildcop: ^0.1.0
 description: >-
   dependencies:
-    imaji_rebuild_budget: any
+    rebuildcop: any
 dependencies:
-  # imaji_rebuild_budget: ^0.1.0
-  imaji_rebuild_budget_extras: ^1.0.0
+  # rebuildcop: ^0.1.0
+  rebuildcop_extras: ^1.0.0
   fork:
     git:
-      url: https://example.com/imaji_rebuild_budget.git
-      path: imaji_rebuild_budget
-    imaji_rebuild_budget: nested
+      url: https://example.com/rebuildcop.git
+      path: rebuildcop
+    rebuildcop: nested
 flutter:
   dependencies:
-    imaji_rebuild_budget: any
+    rebuildcop: any
 '''),
         isEmpty,
       );
@@ -157,15 +157,15 @@ flutter:
       expect(
         libFindings('''
 import 'package:flutter/widgets.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 
-export "package:imaji_rebuild_budget/guard.dart" show expectRebuildBudgetIsTestOnly;
+export "package:rebuildcop/guard.dart" show expectRebuildBudgetIsTestOnly;
 '''),
         [
           'lib/a.dart:2: imports '
-              'package:imaji_rebuild_budget/imaji_rebuild_budget.dart. Import '
+              'package:rebuildcop/rebuildcop.dart. Import '
               'it only from test/ or integration_test/.',
-          'lib/a.dart:4: exports package:imaji_rebuild_budget/guard.dart. '
+          'lib/a.dart:4: exports package:rebuildcop/guard.dart. '
               'Import it only from test/ or integration_test/.',
         ],
       );
@@ -175,11 +175,11 @@ export "package:imaji_rebuild_budget/guard.dart" show expectRebuildBudgetIsTestO
       expect(
         checkLibSource('''
 @Deprecated('debug only')
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart' as budget;
-import 'package:imaji_rebuild_budget/guard.dart' deferred as guard;
+import 'package:rebuildcop/rebuildcop.dart' as budget;
+import 'package:rebuildcop/guard.dart' deferred as guard;
 import 'src/stub.dart'
     if (dart.library.io)
-        'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+        'package:rebuildcop/rebuildcop.dart';
 ''', 'lib/a.dart').map((f) => f.line),
         [2, 3, 6],
       );
@@ -189,20 +189,20 @@ import 'src/stub.dart'
       expect(
         libFindings(r'''
 /// Rebuilds are budgeted with
-/// `import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';`.
+/// `import 'package:rebuildcop/rebuildcop.dart';`.
 library;
 
-// import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-/* /* nested */ import 'package:imaji_rebuild_budget/guard.dart'; */
+// import 'package:rebuildcop/rebuildcop.dart';
+/* /* nested */ import 'package:rebuildcop/guard.dart'; */
 import 'package:flutter/widgets.dart';
 
-const a = "import 'package:imaji_rebuild_budget/guard.dart';";
-const b = r'export "package:imaji_rebuild_budget/guard.dart";';
+const a = "import 'package:rebuildcop/guard.dart';";
+const b = r'export "package:rebuildcop/guard.dart";';
 final c = """
-${a.isEmpty ? 'import' : "export"} 'package:imaji_rebuild_budget/guard.dart';
-import 'package:imaji_rebuild_budget/guard.dart';
+${a.isEmpty ? 'import' : "export"} 'package:rebuildcop/guard.dart';
+import 'package:rebuildcop/guard.dart';
 """;
-final d = '${'}'} import \'package:imaji_rebuild_budget/guard.dart\';';
+final d = '${'}'} import \'package:rebuildcop/guard.dart\';';
 '''),
         isEmpty,
       );
@@ -211,8 +211,8 @@ final d = '${'}'} import \'package:imaji_rebuild_budget/guard.dart\';';
     test('ignores packages whose name only starts with this one', () {
       expect(
         libFindings('''
-import 'package:imaji_rebuild_budget_example/main.dart';
-export 'package:shop/imaji_rebuild_budget.dart';
+import 'package:rebuildcop_example/main.dart';
+export 'package:shop/rebuildcop.dart';
 '''),
         isEmpty,
       );
@@ -228,7 +228,7 @@ const s = """
 one
 two ${'x'}
 """;
-import 'package:imaji_rebuild_budget/guard.dart';
+import 'package:rebuildcop/guard.dart';
 ''', 'lib/a.dart').map((f) => f.line),
         [8],
       );
@@ -241,7 +241,7 @@ import 'package:imaji_rebuild_budget/guard.dart';
         GuardFinding('pubspec.yaml', 14, 'one'),
         GuardFinding('lib/a.dart', 3, 'two'),
       ]),
-      'imaji_rebuild_budget must stay out of the app in /work/shop: it '
+      'rebuildcop must stay out of the app in /work/shop: it '
       'depends on flutter_test, and every dependency and every import from '
       'lib/ is compiled into release builds.\n'
       '  pubspec.yaml:14: one\n'

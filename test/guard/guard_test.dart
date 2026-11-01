@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/guard.dart';
-import 'package:imaji_rebuild_budget/src/guard_io.dart';
+import 'package:rebuildcop/guard.dart';
+import 'package:rebuildcop/src/guard_io.dart';
 
 import '../support/package_fixture.dart';
 
@@ -28,16 +28,16 @@ name: shop
 dependencies:
   flutter:
     sdk: flutter
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 ''',
       });
       expect(
         () => expectRebuildBudgetIsTestOnly(packageRoot: root),
         failsWith(
-          'imaji_rebuild_budget must stay out of the app in $root: it '
+          'rebuildcop must stay out of the app in $root: it '
           'depends on flutter_test, and every dependency and every import '
           'from lib/ is compiled into release builds.\n'
-          '  pubspec.yaml:6: imaji_rebuild_budget is under dependencies, so '
+          '  pubspec.yaml:6: rebuildcop is under dependencies, so '
           'it is built into the app. Move it to dev_dependencies.',
         ),
       );
@@ -49,12 +49,12 @@ dependencies:
         'lib/src/debug_menu.dart': '''
 import 'package:flutter/widgets.dart';
 
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 ''',
         'lib/shop.dart': '''
 library;
 
-export 'package:imaji_rebuild_budget/guard.dart';
+export 'package:rebuildcop/guard.dart';
 ''',
       });
       expect(
@@ -64,10 +64,10 @@ export 'package:imaji_rebuild_budget/guard.dart';
             endsWith(
               '\n'
               '  lib/shop.dart:3: exports '
-              'package:imaji_rebuild_budget/guard.dart. Import it only from '
+              'package:rebuildcop/guard.dart. Import it only from '
               'test/ or integration_test/.\n'
               '  lib/src/debug_menu.dart:3: imports '
-              'package:imaji_rebuild_budget/imaji_rebuild_budget.dart. Import '
+              'package:rebuildcop/rebuildcop.dart. Import '
               'it only from test/ or integration_test/.',
             ),
             isNot(contains('pubspec.yaml')),
@@ -90,21 +90,21 @@ export 'package:imaji_rebuild_budget/guard.dart';
 name: app
 resolution: workspace
 dev_dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 ''',
         'app/test/widgets/cart_test.dart':
-            "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';\n",
+            "import 'package:rebuildcop/rebuildcop.dart';\n",
         'kiosk/pubspec.yaml': '''
 name: kiosk
 resolution: workspace
 dependencies:
-  imaji_rebuild_budget: ^0.1.0
+  rebuildcop: ^0.1.0
 ''',
       });
       expectRebuildBudgetIsTestOnly(packageRoot: '$root/app');
       expect(
         () => expectRebuildBudgetIsTestOnly(packageRoot: '$root/kiosk'),
-        failsWith(contains('  pubspec.yaml:4: imaji_rebuild_budget is under')),
+        failsWith(contains('  pubspec.yaml:4: rebuildcop is under')),
       );
       expect(findPackageRoot('$root/app/test/widgets'), endsWith('/app'));
     });
@@ -118,7 +118,7 @@ dependencies:
     });
   });
 
-  group('dart run imaji_rebuild_budget:check', () {
+  group('dart run rebuildcop:check', () {
     test('exits 0 on a clean app', () {
       final out = StringBuffer();
       final err = StringBuffer();
@@ -126,7 +126,7 @@ dependencies:
       expect(runGuardCheck([root], out: out, err: err), 0);
       expect(
         '$out',
-        '$root: imaji_rebuild_budget is a dev dependency only and is not '
+        '$root: rebuildcop is a dev dependency only and is not '
             'imported from lib/.\n',
       );
       expect('$err', isEmpty);
@@ -136,8 +136,7 @@ dependencies:
       final err = StringBuffer();
       final root = writePackage({
         ...cleanApp,
-        'lib/debug.dart':
-            "import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';\n",
+        'lib/debug.dart': "import 'package:rebuildcop/rebuildcop.dart';\n",
       });
       expect(runGuardCheck([root], out: StringBuffer(), err: err), 1);
       expect('$err', contains('\n  lib/debug.dart:1: imports '));
@@ -146,7 +145,7 @@ dependencies:
     test('prints usage for --help and exits 2 on bad arguments', () {
       final out = StringBuffer();
       expect(runGuardCheck(['--help'], out: out, err: StringBuffer()), 0);
-      expect('$out', startsWith('Usage: dart run imaji_rebuild_budget:check'));
+      expect('$out', startsWith('Usage: dart run rebuildcop:check'));
       final err = StringBuffer();
       expect(runGuardCheck(['--strict'], out: StringBuffer(), err: err), 2);
       expect('$err', startsWith('Usage: '));

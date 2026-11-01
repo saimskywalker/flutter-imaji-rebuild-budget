@@ -1,6 +1,6 @@
 # Examples
 
-[`example/`](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/tree/main/example) pairs real over-rebuilds with their fixes, each as a
+[`example/`](https://github.com/saimskywalker/rebuildcop/tree/main/example) pairs real over-rebuilds with their fixes, each as a
 small test file:
 
 | | Over-rebuild | Fix | Matcher |

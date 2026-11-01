@@ -4,7 +4,7 @@
 // of its own with no testWidgets in it.
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+import 'package:rebuildcop/rebuildcop.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +22,7 @@ void main() {
           'message',
           allOf(
             startsWith(
-              'imaji_rebuild_budget only runs under flutter test. It must be '
+              'rebuildcop only runs under flutter test. It must be '
               'a dev_dependency and must not be imported from lib/.',
             ),
             contains('WidgetsFlutterBinding'),

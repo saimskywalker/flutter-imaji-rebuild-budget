@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget_example/riverpod/cart.dart';
+import 'package:rebuildcop/rebuildcop.dart';
+import 'package:rebuildcop_example/riverpod/cart.dart';
 
 Future<RebuildCounter> applyCoupon(WidgetTester tester, Widget badge) async {
   await tester.pumpWidget(

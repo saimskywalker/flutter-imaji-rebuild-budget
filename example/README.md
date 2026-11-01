@@ -1,7 +1,7 @@
-# imaji_rebuild_budget examples
+# rebuildcop examples
 
 Each test file here pairs a Flutter widget that rebuilds too much
-(**BEFORE**) with its fix (**AFTER**), and shows `imaji_rebuild_budget`
+(**BEFORE**) with its fix (**AFTER**), and shows `rebuildcop`
 telling the two apart. Run them with:
 
 ```sh
@@ -38,11 +38,11 @@ testWidgets('AFTER: ref.watch(cartProvider.select(...)) leaves it alone',
 ```
 
 [`test/rebuild_budget_guard_test.dart`](test/rebuild_budget_guard_test.dart)
-is the guard every app should copy: it fails if `imaji_rebuild_budget` is
+is the guard every app should copy: it fails if `rebuildcop` is
 listed under `dependencies` or imported from `lib/`.
 
 The state libraries are dependencies of this example only;
-`imaji_rebuild_budget` itself depends on nothing but Flutter.
+`rebuildcop` itself depends on nothing but Flutter.
 
 This example needs Flutter 3.32 (Dart 3.8) or newer, because
 `flutter_riverpod` 3 does; the package itself supports Flutter 3.27 and newer.

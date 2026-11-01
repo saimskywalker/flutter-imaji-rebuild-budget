@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget_example/set_state/sortable_results.dart';
-import 'package:imaji_rebuild_budget_example/set_state/ticking_shop.dart';
+import 'package:rebuildcop/rebuildcop.dart';
+import 'package:rebuildcop_example/set_state/sortable_results.dart';
+import 'package:rebuildcop_example/set_state/ticking_shop.dart';
 
 Widget _host(Widget child) =>
     Directionality(textDirection: TextDirection.ltr, child: child);

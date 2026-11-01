@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
-import 'package:imaji_rebuild_budget/src/baseline_store.dart';
+import 'package:rebuildcop/rebuildcop.dart';
+import 'package:rebuildcop/src/baseline_store.dart';
 
 import 'support/fixtures.dart';
 import 'support/tile_a.dart' as a;

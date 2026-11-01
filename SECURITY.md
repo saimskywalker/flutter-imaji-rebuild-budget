@@ -9,7 +9,7 @@ Fixes land on the latest minor release only.
 | 0.1.x | Yes |
 | Older | No |
 
-`imaji_rebuild_budget` runs inside `flutter test` and has no runtime
+`rebuildcop` runs inside `flutter test` and has no runtime
 dependencies beyond `flutter` and `flutter_test`, so its attack surface is
 small. If you find a problem anyway, please report it as described below.
 
