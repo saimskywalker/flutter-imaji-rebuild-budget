@@ -27,6 +27,13 @@ import 'report.dart';
 /// file, or stored but no longer tracked, is a failure too, so the file
 /// always describes exactly what the test checks.
 ///
+/// A tracked type that had no element anywhere in the window fails, in
+/// update mode as well, because its budget could never fail (see
+/// `rebuiltAtMost`); pass [allowAbsent] when one may legitimately be
+/// missing. So does a [named] entry that two different types rebuilt under.
+/// The file keys each type by its name, so two tracked entries with the
+/// same name are rejected.
+///
 /// Run once with `--dart-define=UPDATE_REBUILD_BUDGETS=true` to write the
 /// measured counts as the budgets. Commit the file; from then on a raised
 /// budget shows up as a reviewed diff instead of a silently edited number.
@@ -38,27 +45,52 @@ Matcher matchesRebuildBaseline(
   required String key,
   List<Type> types = const [],
   List<String> named = const [],
+  bool allowAbsent = false,
   int top = defaultTopTypes,
 }) {
-  final tracked = <String>{
-    for (final type in types) '$type',
-    ...named,
-  };
-  if (tracked.isEmpty) {
+  // Each tracked name, with its exact type when it came from `types`.
+  final byName = <String, Type?>{};
+  void track(String name, Type? type) {
+    if (byName.containsKey(name) && byName[name] != type) {
+      throw ArgumentError(
+        'matchesRebuildBaseline tracks two widget types named $name; the '
+        'baseline file keys budgets by name, so it cannot tell them apart.',
+      );
+    }
+    byName[name] = type;
+  }
+
+  for (final type in types) {
+    track('$type', type);
+  }
+  for (final name in named) {
+    track(name, null);
+  }
+  if (byName.isEmpty) {
     throw ArgumentError(
       'matchesRebuildBaseline needs at least one widget type in `types` or '
       '`named`. Track the few types that matter, not the whole tree.',
     );
   }
-  return _BaselineMatcher(path, key, tracked.toList()..sort(), top);
+  final tracked = byName.keys.toList()..sort();
+  return _BaselineMatcher(path, key, tracked, byName, allowAbsent, top);
 }
 
 class _BaselineMatcher extends Matcher {
-  const _BaselineMatcher(this.path, this.key, this.tracked, this.top);
+  const _BaselineMatcher(
+    this.path,
+    this.key,
+    this.tracked,
+    this.types,
+    this.allowAbsent,
+    this.top,
+  );
 
   final String path;
   final String key;
   final List<String> tracked;
+  final Map<String, Type?> types;
+  final bool allowAbsent;
   final int top;
 
   static const String _problemsKey = 'problems';
@@ -77,8 +109,29 @@ class _BaselineMatcher extends Matcher {
       return false;
     }
 
-    final measured = {for (final type in tracked) type: item.countNamed(type)};
+    final measured = <String, int>{};
+    for (final name in tracked) {
+      final type = types[name];
+      bool counts(RebuildRecord r) =>
+          type != null ? r.widgetType == type : r.typeName == name;
+      final counted = item.rebuilds.where(counts).toList();
+      measured[name] = counted.length;
+      final problem = typeBudgetProblem(
+        item,
+        type: type,
+        named: type == null ? name : null,
+        counted: counted,
+        allowAbsent: allowAbsent,
+      );
+      if (problem != null) problems.add(problem);
+    }
     final resolved = resolveBaselinePath(path);
+    if (problems.isNotEmpty) {
+      if (RebuildCounter.updateBaselines) {
+        problems.add('nothing was written to $resolved');
+      }
+      return false;
+    }
 
     if (RebuildCounter.updateBaselines) {
       final baseline = readBaseline(resolved) ?? {};

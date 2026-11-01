@@ -1,5 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:imaji_rebuild_budget/imaji_rebuild_budget.dart';
+
+import 'tile_a.dart' as a;
+import 'tile_b.dart' as b;
 
 /// A small screen with one piece of state and three kinds of children:
 /// one that depends on the state, one rebuilt only because its parent made
@@ -94,6 +98,38 @@ class ListRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text('row $index');
+}
+
+/// Pumps the `Tile` from `tile_a.dart` (when [withA]) and the one from
+/// `tile_b.dart` (when [withB]), rebuilds them once in a window labelled
+/// "tick", and returns the closed window.
+Future<RebuildCounter> tickTiles(
+  WidgetTester tester, {
+  bool withA = false,
+  bool withB = false,
+}) async {
+  final notifier = ValueNotifier(0);
+  addTearDown(notifier.dispose);
+  await tester.pumpWidget(
+    Directionality(
+      textDirection: TextDirection.ltr,
+      child: ValueListenableBuilder<int>(
+        valueListenable: notifier,
+        builder: (_, value, __) => Column(
+          children: [
+            if (withA) a.Tile('a $value'),
+            if (withB) b.Tile('b $value'),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  final window = RebuildCounter.open(label: 'tick');
+  notifier.value++;
+  await tester.pump();
+  window.close();
+  return window;
 }
 
 /// The mismatch text [matcher] produces for [item], failing the test if

@@ -181,6 +181,7 @@ class RebuildCounter {
   final Map<String, num> _countersAtClose = {};
 
   final Set<Element> _known = Set.identity();
+  final Set<Type> _present = {};
   final List<RebuildRecord> _rebuilds = [];
   final List<RebuildRecord> _mounts = [];
 
@@ -236,6 +237,15 @@ class RebuildCounter {
 
   /// Mounts of widgets whose runtime type is exactly [type].
   int mountsOf(Type type) => _mounts.where((r) => r.widgetType == type).length;
+
+  /// The widget types that had an element in the tree at some point in the
+  /// window: when it opened, when it closed, or when one of them built in
+  /// between.
+  ///
+  /// Type budgets check it so that a budget for a type that never appeared
+  /// fails instead of passing with a count of zero. The walks that already
+  /// run at [open] and [close] collect it; there is no extra walk.
+  Set<Type> get presentTypes => Set.unmodifiable(_present);
 
   /// Rebuild counts grouped by widget type name, busiest first.
   ///
@@ -350,8 +360,10 @@ class RebuildCounter {
     final root = WidgetsBinding.instance.rootElement;
     if (root != null) {
       _known.add(root);
+      _present.add(root.widget.runtimeType);
       _walk(root, (element) {
         _known.add(element);
+        _present.add(element.widget.runtimeType);
         _snapshotScroll(element, _scrollAtOpen);
       });
     }
@@ -365,7 +377,10 @@ class RebuildCounter {
     _closedOnce = true;
     final root = WidgetsBinding.instance.rootElement;
     if (root != null) {
-      _walk(root, (element) => _snapshotScroll(element, _scrollAtClose));
+      _walk(root, (element) {
+        _present.add(element.widget.runtimeType);
+        _snapshotScroll(element, _scrollAtClose);
+      });
     }
     _counters.forEach((name, read) => _countersAtClose[name] = read());
   }
@@ -373,6 +388,7 @@ class RebuildCounter {
   void _onBuild(Element element) {
     if (!_open) return;
     final isMount = _known.add(element);
+    _present.add(element.widget.runtimeType);
     final ancestors = <Element>[];
     element.visitAncestorElements((ancestor) {
       ancestors.add(ancestor);
@@ -433,6 +449,57 @@ Set<Element> resolveRoots(Finder finder) {
     );
   }
   return roots;
+}
+
+/// Why a budget over [type] or [named] in [window] could never fail, or
+/// `null` when it can.
+///
+/// A budget over a type with no element in the window counts zero whatever
+/// the code does, which is how a renamed widget, or a test that imports a
+/// same-named widget from a different library than the app, hides. Pass
+/// [allowAbsent] when that is intended. A budget by name also fails when
+/// [counted], the records it would add up, belong to more than one type.
+///
+/// With [budget] false the message is worded for a type that had to
+/// rebuild rather than one with a budget.
+String? typeBudgetProblem(
+  RebuildCounter window, {
+  Type? type,
+  String? named,
+  Iterable<RebuildRecord> counted = const [],
+  bool allowAbsent = false,
+  bool budget = true,
+}) {
+  final name = named ?? '$type';
+  final present = type != null
+      ? window._present.contains(type)
+      : window._present.any((t) => '$t' == name);
+  if (!present && !allowAbsent) {
+    final what = type != null ? '$type element' : 'widget type named $name';
+    final cause = 'no $what existed during ${window._name()}';
+    final sameName = type != null && window._present.any((t) => '$t' == name);
+    if (sameName) {
+      return '$cause${budget ? ', so this budget could never fail' : ''}. '
+          'A different type with the same name, $name, was present: the '
+          'test and the app probably import it from different libraries '
+          '(for example package:flutter/material.dart and '
+          'package:material_ui/material_ui.dart).';
+    }
+    if (!budget) return '$cause. Was it renamed or replaced?';
+    return '$cause, so this budget could never fail. If it was renamed or '
+        'replaced, budget the new ${type != null ? 'type' : 'name'}. To '
+        'assert that it never appears, use findsNothing; to keep this '
+        'budget anyway, pass allowAbsent: true.';
+  }
+  if (named != null) {
+    final types = counted.map((r) => r.widgetType).toSet();
+    if (types.length > 1) {
+      return '${types.length} different types named $name rebuilt during '
+          '${window._name()}, so a budget by name would add them up. Budget '
+          'each by type, or narrow the budget to one subtree.';
+    }
+  }
+  return null;
 }
 
 /// The [ScrollableState] that [element] stands for: its own, the first one

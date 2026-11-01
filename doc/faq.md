@@ -46,6 +46,35 @@ DevTools' "Track widget rebuilds" shares it because it uses the same hook.
 Counting these updates separately is planned in
 [#10](https://github.com/saimskywalker/flutter-imaji-rebuild-budget/issues/10).
 
+**My budget passes but the widget was renamed / moved to `material_ui`.**
+Since the next release it fails instead. A budget for a type with no element
+anywhere in the window (at `open()`, at `close()`, or built in between) could
+never fail, so `rebuiltAtMost`, `mountedAtMost`, `subtreeRebuiltAtMost` and
+`matchesRebuildBaseline` report it:
+
+```text
+Expected: TabBar rebuilt at most 0 times in the window
+   Which: no TabBar element existed during window "scroll the feed", so this
+          budget could never fail. A different type with the same name,
+          TabBar, was present: the test and the app probably import it from
+          different libraries (for example package:flutter/material.dart and
+          package:material_ui/material_ui.dart).
+```
+
+If the widget was renamed or replaced, budget the new type. If the app moved
+to `package:material_ui` (or `cupertino_ui`) and the test still imports
+`package:flutter/material.dart`, the two `TabBar`s are different types:
+import the widget in the test from the same library as the app. To assert
+that a widget never appears, use `expect(find.byType(T), findsNothing)`. For
+a budget whose type may legitimately be missing, pass `allowAbsent: true`:
+
+```dart
+expect(window, rebuiltAtMost(0, of: ErrorBanner, allowAbsent: true));
+```
+
+A budget by name (`named:`) also fails when two different types with that
+name rebuilt, rather than add them up.
+
 **Should every widget have a budget?**
 No. Count the few hot spots that matter (a bottom nav under a poll, a list
 under a ticking timer, a header over a scroll view). A suite that fails over

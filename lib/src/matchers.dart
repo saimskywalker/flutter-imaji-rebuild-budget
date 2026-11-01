@@ -22,6 +22,21 @@ const int defaultTopTypes = 10;
 /// expect(window, rebuiltAtMost(3, named: '_Header'));
 /// ```
 ///
+/// A budget [of] or [named] a type that had no element anywhere in the
+/// window fails, because it could never fail: the widget was renamed or
+/// replaced, or the test imports a same-named widget from a different
+/// library than the app (`package:flutter/material.dart` and
+/// `package:material_ui/material_ui.dart`, for example). To assert that a
+/// widget never appears, use `expect(find.byType(T), findsNothing)`. Pass
+/// [allowAbsent] to keep a budget whose type may legitimately be missing:
+///
+/// ```dart
+/// expect(window, rebuiltAtMost(0, of: ErrorBanner, allowAbsent: true));
+/// ```
+///
+/// A budget [named] a name that two different types rebuilt under fails
+/// too, rather than add their counts together.
+///
 /// The budget should be the count measured when the test was written
 /// (see [RebuildCounter.printCounts]). Raising it is a decision to accept
 /// more rebuilds, not a way to make a red test green.
@@ -35,6 +50,7 @@ Matcher rebuiltAtMost(
   int budget, {
   Type? of,
   String? named,
+  bool allowAbsent = false,
   int top = defaultTopTypes,
 }) {
   _checkBudget(budget);
@@ -46,6 +62,9 @@ Matcher rebuiltAtMost(
     top: top,
     subject: of != null ? '$of' : named ?? 'all widgets',
     budgetKey: of != null ? '$of' : named,
+    type: of,
+    named: named,
+    allowAbsent: allowAbsent,
     select: (record) => of != null
         ? record.widgetType == of
         : named == null || record.typeName == named,
@@ -68,6 +87,9 @@ Matcher rebuiltAtMost(
 /// rebuild. Pass `skipOffstage: false` to the finder for an offstage
 /// subtree.
 ///
+/// Like [rebuiltAtMost], a budget [of] a type that had no element anywhere
+/// in the window fails unless [allowAbsent] is true.
+///
 /// ```dart
 /// expect(window, subtreeRebuiltAtMost(0, under: find.byType(BottomNavigationBar)));
 /// ```
@@ -75,6 +97,7 @@ Matcher subtreeRebuiltAtMost(
   int budget, {
   required Finder under,
   Type? of,
+  bool allowAbsent = false,
   int top = defaultTopTypes,
 }) {
   _checkBudget(budget);
@@ -85,6 +108,8 @@ Matcher subtreeRebuiltAtMost(
         ? 'the subtree under the ${under.describeMatch(Plurality.one)}'
         : '$of under the ${under.describeMatch(Plurality.one)}',
     budgetKey: of == null ? null : '$of',
+    type: of,
+    allowAbsent: allowAbsent,
     under: under,
     select: (record) => of == null || record.widgetType == of,
     pool: (window) => window.rebuilds,
@@ -102,7 +127,15 @@ Matcher subtreeRebuiltAtMost(
 /// New render-object elements (`ColoredBox`, `Padding`, ...) are not seen,
 /// because Flutter does not call `debugOnRebuildDirtyWidget` when one is
 /// mounted; count the widget that builds them instead.
-Matcher mountedAtMost(int budget, {Type? of, int top = defaultTopTypes}) {
+///
+/// Like [rebuiltAtMost], a budget [of] a type that had no element anywhere
+/// in the window fails unless [allowAbsent] is true.
+Matcher mountedAtMost(
+  int budget, {
+  Type? of,
+  bool allowAbsent = false,
+  int top = defaultTopTypes,
+}) {
   _checkBudget(budget);
   return _BudgetMatcher(
     budget: budget,
@@ -110,6 +143,8 @@ Matcher mountedAtMost(int budget, {Type? of, int top = defaultTopTypes}) {
     subject: of == null ? 'new elements' : 'new $of elements',
     verb: 'mounted',
     budgetKey: of == null ? null : '$of',
+    type: of,
+    allowAbsent: allowAbsent,
     select: (record) => of == null || record.widgetType == of,
     pool: (window) => window.mounts,
   );
@@ -129,6 +164,9 @@ class _BudgetMatcher extends Matcher {
     required this.select,
     required this.pool,
     this.budgetKey,
+    this.type,
+    this.named,
+    this.allowAbsent = false,
     this.under,
     this.verb = 'rebuilt',
   });
@@ -138,6 +176,9 @@ class _BudgetMatcher extends Matcher {
   final String subject;
   final String verb;
   final String? budgetKey;
+  final Type? type;
+  final String? named;
+  final bool allowAbsent;
   final Finder? under;
   final bool Function(RebuildRecord record) select;
   final List<RebuildRecord> Function(RebuildCounter window) pool;
@@ -168,13 +209,27 @@ class _BudgetMatcher extends Matcher {
       }
       records = records.where((r) => r.isWithin(roots)).toList();
     }
-    final count = records.where(select).length;
+    final counted = records.where(select).toList();
+    final count = counted.length;
     matchState[_countKey] = count;
     matchState[_scopeKey] = records;
     if (RebuildCounter.printCounts) {
       final window = item.label == null ? '' : ' in "${item.label}"';
       // ignore: avoid_print
       print(printMeasurement('$subject $verb$window', count, budget));
+    }
+    if (type != null || named != null) {
+      final problem = typeBudgetProblem(
+        item,
+        type: type,
+        named: named,
+        counted: counted,
+        allowAbsent: allowAbsent,
+      );
+      if (problem != null) {
+        matchState[_problemKey] = problem;
+        return false;
+      }
     }
     return count <= budget;
   }
