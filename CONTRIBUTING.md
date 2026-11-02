@@ -53,3 +53,8 @@ Using AI tools is fine; please just be open about it.
 1. Update `version` in `pubspec.yaml` and add a `CHANGELOG.md` entry.
 2. `dart pub publish --dry-run` must report zero warnings.
 3. Tag `vX.Y.Z` and publish.
+
+## Stay in touch
+
+Don't forget to follow [@saimskywalker](https://github.com/saimskywalker) on
+GitHub to see new releases and other open-source projects as they come out.
